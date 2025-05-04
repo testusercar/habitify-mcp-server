@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "main": "./build/index.js",
+  "type": "module",
   "files": [
     "build"
   ],
@@ -12,7 +13,7 @@
   "scripts": {
     "test": "jest --passWithNoTests --coverage",
     "dev": "tsx watch ./src/index.ts",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.json",
     "lint": "eslint ./src --ext .ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

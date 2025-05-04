@@ -1,9 +1,11 @@
+#!/usr/bin/env node
+
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod'
-import HabitifyApiClient from '@sargonpiraev/habitify-api-client'
-
+import { HabitifyApiClient } from '@sargonpiraev/habitify-api-client'
 import dotenv from 'dotenv'
+
 dotenv.config()
 
 const server = new McpServer({
@@ -31,7 +33,7 @@ server.tool(
       .describe("The date to get the journal for. Format: yyyy-MM-dd'T'HH:mm:ss±hh:mm"),
   },
   async ({ target_date }) => {
-    const result = await habitifyApiClient.getJournalHabits({ target_date })
+    const result = await habitifyApiClient.getJournal({ target_date })
     return { content: [{ type: 'text', text: JSON.stringify(result) }] }
   }
 )
