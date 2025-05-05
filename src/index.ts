@@ -55,13 +55,13 @@ mcpServer.tool(
   'get-journal',
   `
     Get list of habits for a specific date.
-    target_date is optional because by default it will get the journal for the current date.
+    If specific date is not provided then get the journal for the current date by just omitting target_date parameter.
   `,
   {
     target_date: z.string().optional().describe(`
-      The date to get the journal for.
+      The date to get the list of habits for.
       Format: yyyy-MM-dd'T'HH:mm:ss±hh:mm.
-      Optional because by default it will get the journal for the current date.
+      Optional because by default it will get the list of habits for the current date.
     `),
     order_by: z.enum(['priority', 'reminder_time', 'status']).optional(),
     status: z.enum(['in_progress', 'completed', 'failed', 'skipped']).optional(),
