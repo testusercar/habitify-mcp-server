@@ -69,6 +69,8 @@ mcpServer.tool(
     time_of_day: z.union([z.nativeEnum(TimeOfDay), z.array(z.nativeEnum(TimeOfDay))]).optional(),
   },
   async ({ target_date, order_by, status, area_id, time_of_day }) => {
+    console.error(777, 'target_date', target_date)
+    console.log(777, 'target_date', target_date)
     try {
       const result = await habitifyApiClient.getJournal({
         target_date,
