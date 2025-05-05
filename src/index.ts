@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { HabitifyApiClient } from '@sargonpiraev/habitify-api-client'
 import { TimeOfDay } from '@sargonpiraev/habitify-api-client/build/types.js'
 import dotenv from 'dotenv'
+import { CallToolResult } from '@modelcontextprotocol/sdk/types.js'
 
 dotenv.config()
 
@@ -19,8 +20,10 @@ const mcpServer = new McpServer(
       tools: {},
       logging: {},
     },
-    instructions:
-      'This is a MCP server for the Habitify API. It is used to get and set data in the Habitify API.',
+    instructions: `
+      This is a MCP server for the Habitify API. 
+      It is used to get and set data in the Habitify API.
+    `,
   }
 )
 
@@ -35,39 +38,49 @@ const {
 } = mcpServer
 
 const logger = {
-  log: (...message: (string | object)[]) =>
-    sendLoggingMessage({ level: 'info', data: message.join(' ') }),
-  error: (...message: (string | object)[]) =>
-    sendLoggingMessage({ level: 'error', data: message.join(' ') }),
-  debug: (...message: (string | object)[]) =>
-    sendLoggingMessage({ level: 'debug', data: message.join(' ') }),
+  log: (...message: (string | object)[]) => sendLoggingMessage({ level: 'info', data: message.join(' ') }),
+  error: (...message: (string | object)[]) => sendLoggingMessage({ level: 'error', data: message.join(' ') }),
+  debug: (...message: (string | object)[]) => sendLoggingMessage({ level: 'debug', data: message.join(' ') }),
 }
 
 const habitifyApiClient = new HabitifyApiClient(env.HABITIFY_API_KEY, logger)
 
+function handleError(error: unknown) {
+  console.error(error)
+  return { isError: true, content: [{ type: 'text', text: `Error ${error}` }] } as CallToolResult
+}
+
 // Get journal
 mcpServer.tool(
   'get-journal',
-  'Get journal',
+  `
+    Get list of habits for a specific date.
+    target_date is optional because by default it will get the journal for the current date.
+  `,
   {
-    target_date: z
-      .string()
-      .describe("The date to get the journal for. Format: yyyy-MM-dd'T'HH:mm:ss±hh:mm")
-      .optional(),
+    target_date: z.string().optional().describe(`
+      The date to get the journal for.
+      Format: yyyy-MM-dd'T'HH:mm:ss±hh:mm.
+      Optional because by default it will get the journal for the current date.
+    `),
     order_by: z.enum(['priority', 'reminder_time', 'status']).optional(),
     status: z.enum(['in_progress', 'completed', 'failed', 'skipped']).optional(),
     area_id: z.string().optional(),
     time_of_day: z.union([z.nativeEnum(TimeOfDay), z.array(z.nativeEnum(TimeOfDay))]).optional(),
   },
   async ({ target_date, order_by, status, area_id, time_of_day }) => {
-    const result = await habitifyApiClient.getJournal({
-      target_date,
-      order_by,
-      status,
-      area_id,
-      time_of_day,
-    })
-    return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+    try {
+      const result = await habitifyApiClient.getJournal({
+        target_date,
+        order_by,
+        status,
+        area_id,
+        time_of_day,
+      })
+      return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
@@ -80,11 +93,12 @@ mcpServer.tool(
     target_date: z.string().optional(),
   },
   async ({ habit_id, target_date }) => {
-    const result = await habitifyApiClient.getHabitStatus({
-      habitId: habit_id,
-      target_date: target_date,
-    })
-    return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+    try {
+      const result = await habitifyApiClient.getHabitStatus({ habit_id, target_date })
+      return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
@@ -99,11 +113,10 @@ mcpServer.tool(
   },
   async ({ habit_id, status, target_date }) => {
     try {
-      await habitifyApiClient.updateHabitStatus({ habitId: habit_id, status, target_date })
+      await habitifyApiClient.updateHabitStatus({ habit_id, status, target_date })
       return { content: [{ type: 'text', text: 'Status updated successfully' }] }
     } catch (error) {
-      console.error(error)
-      return { is_error: true, content: [{ type: 'text', text: `Error ${error}` }] }
+      return handleError(error)
     }
   }
 )
@@ -118,15 +131,23 @@ mcpServer.tool(
     to: z.string().optional(),
   },
   async ({ habit_id, from, to }) => {
-    const result = await habitifyApiClient.getLogs({ habitId: habit_id, from, to })
-    return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+    try {
+      const result = await habitifyApiClient.getLogs({ habit_id, from, to })
+      return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
 // Add log
 mcpServer.tool(
   'add-log',
-  'Add a log for a habit',
+  `
+    Add a log for a habit.
+    If habit ID is not provided then get Journal tool should be called first.
+    Then try to find requested habit in the list of habits.
+  `,
   {
     habit_id: z.string(),
     unit_type: z.string(),
@@ -134,8 +155,12 @@ mcpServer.tool(
     target_date: z.string(),
   },
   async ({ habit_id, unit_type, value, target_date }) => {
-    await habitifyApiClient.addLog({ habitId: habit_id, unit_type, value, target_date })
-    return { content: [{ type: 'text', text: 'Log added successfully' }] }
+    try {
+      await habitifyApiClient.addLog({ habit_id, unit_type, value, target_date })
+      return { content: [{ type: 'text', text: 'Log added successfully' }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
@@ -148,8 +173,12 @@ mcpServer.tool(
     log_id: z.string(),
   },
   async ({ habit_id, log_id }) => {
-    await habitifyApiClient.deleteLog({ habitId: habit_id, logId: log_id })
-    return { content: [{ type: 'text', text: 'Log deleted successfully' }] }
+    try {
+      await habitifyApiClient.deleteLog({ habit_id, log_id })
+      return { content: [{ type: 'text', text: 'Log deleted successfully' }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
@@ -163,8 +192,12 @@ mcpServer.tool(
     to: z.string().optional(),
   },
   async ({ habit_id, from, to }) => {
-    await habitifyApiClient.deleteLogs({ habitId: habit_id, from, to })
-    return { content: [{ type: 'text', text: 'Logs deleted successfully' }] }
+    try {
+      await habitifyApiClient.deleteLogs({ habit_id, from, to })
+      return { content: [{ type: 'text', text: 'Logs deleted successfully' }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
@@ -176,8 +209,12 @@ mcpServer.tool(
     target_date: z.string().optional(),
   },
   async ({ target_date }) => {
-    const result = await habitifyApiClient.getMoods({ target_date })
-    return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+    try {
+      const result = await habitifyApiClient.getMoods({ target_date })
+      return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
@@ -189,8 +226,12 @@ mcpServer.tool(
     mood_id: z.string(),
   },
   async ({ mood_id }) => {
-    const result = await habitifyApiClient.getMood({ moodId: mood_id })
-    return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+    try {
+      const result = await habitifyApiClient.getMood({ mood_id })
+      return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
@@ -203,8 +244,12 @@ mcpServer.tool(
     created_at: z.string(),
   },
   async ({ value, created_at }) => {
-    await habitifyApiClient.createMood({ value, created_at })
-    return { content: [{ type: 'text', text: 'Mood created successfully' }] }
+    try {
+      await habitifyApiClient.createMood({ value, created_at })
+      return { content: [{ type: 'text', text: 'Mood created successfully' }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
@@ -218,8 +263,12 @@ mcpServer.tool(
     created_at: z.string(),
   },
   async ({ mood_id, value, created_at }) => {
-    await habitifyApiClient.updateMood({ moodId: mood_id, value, created_at })
-    return { content: [{ type: 'text', text: 'Mood updated successfully' }] }
+    try {
+      await habitifyApiClient.updateMood({ mood_id, value, created_at })
+      return { content: [{ type: 'text', text: 'Mood updated successfully' }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
@@ -231,15 +280,23 @@ mcpServer.tool(
     mood_id: z.string(),
   },
   async ({ mood_id }) => {
-    await habitifyApiClient.deleteMood({ moodId: mood_id })
-    return { content: [{ type: 'text', text: 'Mood deleted successfully' }] }
+    try {
+      await habitifyApiClient.deleteMood({ mood_id })
+      return { content: [{ type: 'text', text: 'Mood deleted successfully' }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
 // Get areas
 mcpServer.tool('get-areas', 'Get all areas', {}, async () => {
-  const result = await habitifyApiClient.getAreas()
-  return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+  try {
+    const result = await habitifyApiClient.getAreas()
+    return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+  } catch (error) {
+    return handleError(error)
+  }
 })
 
 // Get notes
@@ -252,8 +309,12 @@ mcpServer.tool(
     to: z.string().optional(),
   },
   async ({ habit_id, from, to }) => {
-    const result = await habitifyApiClient.getNotes({ habitId: habit_id, from, to })
-    return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+    try {
+      const result = await habitifyApiClient.getNotes({ habit_id, from, to })
+      return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
@@ -264,11 +325,15 @@ mcpServer.tool(
   {
     habit_id: z.string(),
     content: z.string(),
-    created: z.string(),
+    created_at: z.string(),
   },
-  async ({ habit_id, content, created }) => {
-    await habitifyApiClient.addTextNote({ habitId: habit_id, content, created })
-    return { content: [{ type: 'text', text: 'Text note added successfully' }] }
+  async ({ habit_id, content, created_at }) => {
+    try {
+      await habitifyApiClient.addTextNote({ habit_id, content, created_at })
+      return { content: [{ type: 'text', text: 'Text note added successfully' }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
@@ -281,8 +346,12 @@ mcpServer.tool(
     note_id: z.string(),
   },
   async ({ habit_id, note_id }) => {
-    await habitifyApiClient.deleteNote({ habitId: habit_id, noteId: note_id })
-    return { content: [{ type: 'text', text: 'Note deleted successfully' }] }
+    try {
+      await habitifyApiClient.deleteNote({ habit_id, note_id })
+      return { content: [{ type: 'text', text: 'Note deleted successfully' }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
@@ -296,8 +365,12 @@ mcpServer.tool(
     to: z.string().optional(),
   },
   async ({ habit_id, from, to }) => {
-    await habitifyApiClient.deleteNotes({ habitId: habit_id, from, to })
-    return { content: [{ type: 'text', text: 'Notes deleted successfully' }] }
+    try {
+      await habitifyApiClient.deleteNotes({ habit_id, from, to })
+      return { content: [{ type: 'text', text: 'Notes deleted successfully' }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
@@ -309,8 +382,12 @@ mcpServer.tool(
     habit_id: z.string(),
   },
   async ({ habit_id }) => {
-    const result = await habitifyApiClient.getActions({ habitId: habit_id })
-    return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+    try {
+      const result = await habitifyApiClient.getActions({ habit_id })
+      return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
@@ -323,8 +400,12 @@ mcpServer.tool(
     action_id: z.string(),
   },
   async ({ habit_id, action_id }) => {
-    const result = await habitifyApiClient.getAction({ habitId: habit_id, actionId: action_id })
-    return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+    try {
+      const result = await habitifyApiClient.getAction({ habit_id, action_id })
+      return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
@@ -338,8 +419,12 @@ mcpServer.tool(
     remind_at: z.string(),
   },
   async ({ habit_id, title, remind_at }) => {
-    await habitifyApiClient.createAction({ habitId: habit_id, title, remind_at })
-    return { content: [{ type: 'text', text: 'Action created successfully' }] }
+    try {
+      await habitifyApiClient.createAction({ habit_id, title, remind_at })
+      return { content: [{ type: 'text', text: 'Action created successfully' }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
@@ -355,14 +440,18 @@ mcpServer.tool(
     remind_at: z.string().optional(),
   },
   async ({ habit_id, action_id, status, title, remind_at }) => {
-    await habitifyApiClient.updateAction({
-      habitId: habit_id,
-      actionId: action_id,
-      status,
-      title,
-      remind_at,
-    })
-    return { content: [{ type: 'text', text: 'Action updated successfully' }] }
+    try {
+      await habitifyApiClient.updateAction({
+        habit_id,
+        action_id,
+        status,
+        title,
+        remind_at,
+      })
+      return { content: [{ type: 'text', text: 'Action updated successfully' }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
@@ -375,8 +464,12 @@ mcpServer.tool(
     action_id: z.string(),
   },
   async ({ habit_id, action_id }) => {
-    await habitifyApiClient.deleteAction({ habitId: habit_id, actionId: action_id })
-    return { content: [{ type: 'text', text: 'Action deleted successfully' }] }
+    try {
+      await habitifyApiClient.deleteAction({ habit_id, action_id })
+      return { content: [{ type: 'text', text: 'Action deleted successfully' }] }
+    } catch (error) {
+      return handleError(error)
+    }
   }
 )
 
