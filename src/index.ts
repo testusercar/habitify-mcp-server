@@ -33,14 +33,13 @@ const envSchema = z.object({
 
 const env = envSchema.parse(process.env)
 
-const {
-  server: { sendLoggingMessage },
-} = mcpServer
-
 const logger = {
-  log: (...message: (string | object)[]) => sendLoggingMessage({ level: 'info', data: message.join(' ') }),
-  error: (...message: (string | object)[]) => sendLoggingMessage({ level: 'error', data: message.join(' ') }),
-  debug: (...message: (string | object)[]) => sendLoggingMessage({ level: 'debug', data: message.join(' ') }),
+  log: (...message: (string | object)[]) =>
+    mcpServer.server.sendLoggingMessage({ level: 'info', data: message.join(' ') }),
+  error: (...message: (string | object)[]) =>
+    mcpServer.server.sendLoggingMessage({ level: 'error', data: message.join(' ') }),
+  debug: (...message: (string | object)[]) =>
+    mcpServer.server.sendLoggingMessage({ level: 'debug', data: message.join(' ') }),
 }
 
 const habitifyApiClient = new HabitifyApiClient(env.HABITIFY_API_KEY, logger)
@@ -62,6 +61,7 @@ mcpServer.tool(
       The date to get the list of habits for.
       Format: yyyy-MM-dd'T'HH:mm:ss±hh:mm.
       Optional because by default it will get the list of habits for the current date.
+      If specific date is not provided then get the journal for the current date by just omitting target_date parameter.
     `),
     order_by: z.enum(['priority', 'reminder_time', 'status']).optional(),
     status: z.enum(['in_progress', 'completed', 'failed', 'skipped']).optional(),
@@ -476,7 +476,7 @@ mcpServer.tool(
 async function main() {
   const transport = new StdioServerTransport()
   await mcpServer.connect(transport)
-  console.error('Habitify MCP Server running on stdio')
+  mcpServer.server.sendLoggingMessage({ level: 'info', data: 'Habitify MCP Server running on stdio' })
 }
 
 main().catch((error) => {
