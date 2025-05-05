@@ -9,16 +9,20 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-const mcpServer = new McpServer({
-  name: 'Habitify MCP Server',
-  version: '1.0.0', 
- }, {
-  capabilities: {
-    tools: {},
-    logging: {},
+const mcpServer = new McpServer(
+  {
+    name: 'Habitify MCP Server',
+    version: '1.0.0',
   },
-  instructions: 'This is a MCP server for the Habitify API. It is used to get and set data in the Habitify API.',
-})
+  {
+    capabilities: {
+      tools: {},
+      logging: {},
+    },
+    instructions:
+      'This is a MCP server for the Habitify API. It is used to get and set data in the Habitify API.',
+  }
+)
 
 const envSchema = z.object({
   HABITIFY_API_KEY: z.string().min(1),
@@ -26,12 +30,17 @@ const envSchema = z.object({
 
 const env = envSchema.parse(process.env)
 
-const { server: { sendLoggingMessage } } = mcpServer
+const {
+  server: { sendLoggingMessage },
+} = mcpServer
 
 const logger = {
-  log: (...message: (string | object)[]) => sendLoggingMessage({ level: 'info', data: message.join(' ') }),
-  error: (...message: (string | object)[]) => sendLoggingMessage({ level: 'error', data: message.join(' ') }),
-  debug: (...message: (string | object)[]) => sendLoggingMessage({ level: 'debug', data: message.join(' ') }),
+  log: (...message: (string | object)[]) =>
+    sendLoggingMessage({ level: 'info', data: message.join(' ') }),
+  error: (...message: (string | object)[]) =>
+    sendLoggingMessage({ level: 'error', data: message.join(' ') }),
+  debug: (...message: (string | object)[]) =>
+    sendLoggingMessage({ level: 'debug', data: message.join(' ') }),
 }
 
 const habitifyApiClient = new HabitifyApiClient(env.HABITIFY_API_KEY, logger)
@@ -41,19 +50,23 @@ mcpServer.tool(
   'get-journal',
   'Get journal',
   {
-    target_date: z.string()
+    target_date: z
+      .string()
       .describe("The date to get the journal for. Format: yyyy-MM-dd'T'HH:mm:ss±hh:mm")
       .optional(),
     order_by: z.enum(['priority', 'reminder_time', 'status']).optional(),
     status: z.enum(['in_progress', 'completed', 'failed', 'skipped']).optional(),
     area_id: z.string().optional(),
-    time_of_day: z.union([
-      z.nativeEnum(TimeOfDay),
-      z.array(z.nativeEnum(TimeOfDay)),
-    ]).optional(),
+    time_of_day: z.union([z.nativeEnum(TimeOfDay), z.array(z.nativeEnum(TimeOfDay))]).optional(),
   },
   async ({ target_date, order_by, status, area_id, time_of_day }) => {
-    const result = await habitifyApiClient.getJournal({ target_date, order_by, status, area_id, time_of_day })
+    const result = await habitifyApiClient.getJournal({
+      target_date,
+      order_by,
+      status,
+      area_id,
+      time_of_day,
+    })
     return { content: [{ type: 'text', text: JSON.stringify(result) }] }
   }
 )
@@ -67,7 +80,10 @@ mcpServer.tool(
     target_date: z.string().optional(),
   },
   async ({ habit_id, target_date }) => {
-    const result = await habitifyApiClient.getHabitStatus({ habitId: habit_id, target_date: target_date })
+    const result = await habitifyApiClient.getHabitStatus({
+      habitId: habit_id,
+      target_date: target_date,
+    })
     return { content: [{ type: 'text', text: JSON.stringify(result) }] }
   }
 )
@@ -215,21 +231,16 @@ mcpServer.tool(
     mood_id: z.string(),
   },
   async ({ mood_id }) => {
-    await habitifyApiClient.deleteMood({ moodId: mood_id }  )
+    await habitifyApiClient.deleteMood({ moodId: mood_id })
     return { content: [{ type: 'text', text: 'Mood deleted successfully' }] }
   }
 )
 
 // Get areas
-mcpServer.tool(
-  'get-areas',
-  'Get all areas',
-  {},
-  async () => {
-    const result = await habitifyApiClient.getAreas()
-    return { content: [{ type: 'text', text: JSON.stringify(result) }] }
-  }
-)
+mcpServer.tool('get-areas', 'Get all areas', {}, async () => {
+  const result = await habitifyApiClient.getAreas()
+  return { content: [{ type: 'text', text: JSON.stringify(result) }] }
+})
 
 // Get notes
 mcpServer.tool(
@@ -344,7 +355,13 @@ mcpServer.tool(
     remind_at: z.string().optional(),
   },
   async ({ habit_id, action_id, status, title, remind_at }) => {
-    await habitifyApiClient.updateAction({ habitId: habit_id, actionId: action_id, status, title, remind_at })
+    await habitifyApiClient.updateAction({
+      habitId: habit_id,
+      actionId: action_id,
+      status,
+      title,
+      remind_at,
+    })
     return { content: [{ type: 'text', text: 'Action updated successfully' }] }
   }
 )
