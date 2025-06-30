@@ -1,6 +1,5 @@
 import multimatch from 'multimatch'
 import { env } from '../env.js'
-import { logger } from '../server.js'
 
 // Parse tool glob patterns from environment variable
 export const toolGlobPatterns = env.TOOL_GLOB_PATTERNS
@@ -25,8 +24,5 @@ export function isToolEnabled(toolName: string): boolean {
 
   // Use multimatch to check if tool name matches any of the patterns
   const result = multimatch([toolName], toolGlobPatterns)
-
-  logger.info(`${toolName} is enabled: ${result.length > 0}`)
-
   return result.length > 0
 }

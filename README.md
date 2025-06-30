@@ -11,27 +11,26 @@
 
 MCP server for seamless Habitify API integration with AI assistants. Track habits, manage mood logs, create notes, and automate habit tracking workflows directly from Claude, Cursor, and other MCP-compatible AI tools.
 
-## ❌ Without Habitify MCP Server
+## 🚀 Features
 
-Users face these challenges when working with habit tracking:
-
-- ❌ Manual habit logging and data entry in Habitify app
-- ❌ No direct integration with AI coding assistants for habit automation
-- ❌ Time-consuming API research and implementation for Habitify integration
-- ❌ Repetitive habit tracking tasks that could be automated
-- ❌ Disconnected workflow between productivity tools and habit tracking
-
-## ✅ With Habitify MCP Server
-
-Habitify MCP server provides seamless integration and automation:
-
-- ✅ Direct access to Habitify API from AI assistants like Claude and Cursor
-- ✅ Automated habit tracking and mood logging workflows
-- ✅ Up-to-date Habitify API integration with comprehensive tool coverage
-- ✅ Save hours of manual habit tracking and data entry
-- ✅ Integrate habit tracking into your daily coding and productivity workflows
+- 🔌 **Seamless AI Integration**: Direct Habitify API access from Claude, Cursor, and VS Code
+- 🤖 **Automated Workflows**: Automate habit tracking, mood logging, and note creation
+- 📊 **Complete API Coverage**: 23+ tools covering habits, moods, logs, notes, and actions
+- 🎯 **Selective Tool Loading**: Enable specific tools with glob patterns
+- ⚡ **Real-time Tracking**: Log habits, moods, and create notes instantly from AI assistants
+- 🔧 **Professional Integration**: Error handling, validation, and comprehensive logging
+- 📝 **Rich Documentation**: Detailed tool descriptions and troubleshooting guides
 
 Add `use habitify` to your prompt in Cursor or Claude.
+
+## 🔑 Getting Your Habitify API Key
+
+Before installation, you'll need a Habitify API key:
+
+1. Open [Habitify app](https://habitify.me) or web interface
+2. Go to **Settings → Account → API Access**
+3. Generate new API key or copy existing one
+4. Save this key for the installation steps below
 
 ## 🛠️ Installation
 
@@ -180,23 +179,13 @@ Install through the Cline MCP Server Marketplace:
 
 </details>
 
-### Local Development
+### Contributing
 
-```bash
-git clone https://gitlab.com/sargonpiraev/habitify-mcp-server
-cd habitify-mcp-server
-npm install
-cp .env.example .env
-# Edit .env with your Habitify API key
-npm run build
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, guidelines, and how to contribute to this project.
 
 ### Development Tools
 
 ```bash
-# Run in development mode
-npm run dev
-
 # Debug with MCP Inspector
 npm run inspect
 ```
@@ -205,92 +194,88 @@ npm run inspect
 
 ### Tool Selection
 
-You can enable specific tools using the `--tools` parameter:
+You can enable specific tools using glob patterns via environment variables:
 
 ```bash
-npx @sargonpiraev/habitify-mcp-server --tools=get_journal,add_log,create_mood
+# Enable only 'get' tools
+TOOL_GLOB_PATTERNS="get-*" npx @sargonpiraev/habitify-mcp-server
+
+# Enable all except delete operations
+TOOL_GLOB_PATTERNS="*,!delete-*" npx @sargonpiraev/habitify-mcp-server
+
+# Enable specific tools
+TOOL_GLOB_PATTERNS="get-journal,add-log,create-mood" npx @sargonpiraev/habitify-mcp-server
 ```
 
 ### Tools List
 
-#### `get_journal`
+#### Journal Tools
 
-- **Description**: Get list of habits for a specific date
-- **Parameters**:
-  - `target_date` (optional): Date in ISO format. Defaults to current date
-  - `order_by` (optional): Order by priority, reminder_time, or status
-  - `status` (optional): Filter by habit status
-  - `area_id` (optional): Filter by area ID
-  - `time_of_day` (optional): Filter by time of day
-- **Example**: Get today's habits ordered by priority
+- **`get-journal`**: Get list of habits for a specific date with filtering options
 
-#### `get_habit_status` / `update_habit_status`
+#### Log Tools
 
-- **Description**: Get or update habit completion status
-- **Parameters**:
-  - `habit_id` (required): The habit identifier
-  - `target_date` (optional): Date for status check/update
-  - `status` (required for update): completed, skipped, or none
-- **Example**: Mark morning meditation as completed
+- **`add-log`**: Add quantifiable habit log (numbers, measurements)
+- **`get-logs`**: Retrieve habit logs with filtering
+- **`delete-log`**: Delete a specific habit log entry
+- **`delete-logs`**: Delete multiple habit log entries
 
-#### `get_logs` / `add_log` / `delete_log` / `delete_logs`
+#### Mood Tools
 
-- **Description**: Manage quantifiable habit logs (numbers, measurements)
-- **Parameters**:
-  - `habit_id` (required): The habit identifier
-  - `unit_type` (required for add): Type of measurement
-  - `value` (required for add): Numeric value to log
-  - `target_date` (required for add): Date for the log entry
-- **Example**: Log 30 minutes of exercise or 8 glasses of water
+- **`create-mood`**: Create new mood entry (1-5 scale)
+- **`get-mood`**: Get specific mood entry by ID
+- **`get-moods`**: Get multiple mood entries with filtering
+- **`update-mood`**: Update existing mood entry
+- **`delete-mood`**: Delete mood entry
 
-#### `get_moods` / `get_mood` / `create_mood` / `update_mood` / `delete_mood`
+#### Action Tools
 
-- **Description**: Track daily mood on a 1-5 scale
-- **Parameters**:
-  - `mood_id` (required for get/update/delete): Mood entry identifier
-  - `value` (required for create/update): Mood rating 1-5
-  - `created_at` (required for create/update): Timestamp
-- **Example**: Log daily mood rating
+- **`create-action`**: Create habit-related action items and reminders
+- **`get-action`**: Get specific action by ID
+- **`get-actions`**: Get multiple actions with filtering
+- **`update-action`**: Update existing action
+- **`delete-action`**: Delete action item
 
-#### `get_areas`
+#### Note Tools
 
-- **Description**: Get all habit areas/categories
-- **Parameters**: None
-- **Example**: List all habit categories like "Health", "Work", "Personal"
+- **`add-text-note`**: Add text notes to habits
+- **`get-notes`**: Retrieve notes with filtering
+- **`delete-note`**: Delete specific note
+- **`delete-notes`**: Delete multiple notes
 
-#### `get_notes` / `add_text_note` / `delete_note` / `delete_notes`
+#### Habit Tools
 
-- **Description**: Manage text notes attached to habits
-- **Parameters**:
-  - `habit_id` (required): The habit identifier
-  - `content` (required for add): Note text content
-  - `created_at` (required for add): Timestamp
-- **Example**: Add reflection notes to meditation habit
+- **`get-habit-status`**: Get habit completion status
+- **`update-habit-status`**: Update habit status (completed, skipped, none)
 
-#### `get_actions` / `get_action` / `create_action` / `update_action` / `delete_action`
+#### Area Tools
 
-- **Description**: Manage habit-related action items and reminders
-- **Parameters**:
-  - `habit_id` (required): The habit identifier
-  - `action_id` (required for get/update/delete): Action identifier
-  - `title` (required for create): Action title
-  - `remind_at` (required for create): Reminder time
-- **Example**: Create reminder to prepare workout clothes
+- **`get-areas`**: Get all habit categories/areas
+
+**Total: 23 tools available** 🎯
 
 ## Configuration
 
 ### Environment Variables
 
-- `HABITIFY_API_KEY`: Your Habitify API key (required) - Get from [Habitify Settings](https://habitify.me)
-- `HABITIFY_BASE_URL`: Custom base URL (optional, defaults to official API)
-- `HABITIFY_TIMEOUT`: Request timeout in ms (optional, default: 30000)
+Create a `.env` file in the project root:
 
-### Getting Your Habitify API Key
+```bash
+# Required: Your Habitify API key (get from Habitify Settings)
+HABITIFY_API_KEY=your_habitify_api_key_here
 
-1. Open [Habitify app](https://habitify.me) or web interface
-2. Go to Settings → Account → API Access
-3. Generate new API key or copy existing one
-4. Add the key to your MCP server configuration
+# Optional: Tool filtering using glob patterns
+# Examples:
+# - 'get-*' - enable all 'get' tools
+# - 'get-*,!get-habit-*' - enable all 'get' tools except habit ones
+# - 'create-*,update-*' - enable only create and update tools
+# - '!delete-*' - enable all tools except delete operations
+# Leave empty or unset to enable all tools
+TOOL_GLOB_PATTERNS=
+
+# Optional: Logging level (debug, info, notice, warning, error)
+LOG_LEVEL=info
+```
 
 ### Claude Desktop Setup
 
@@ -301,130 +286,44 @@ npx @sargonpiraev/habitify-mcp-server --tools=get_journal,add_log,create_mood
 
 ## ❗ Troubleshooting
 
-If you encounter integration issues, try these solutions in order:
+### Quick Fixes
 
-### Installation Issues
+1. **Connection Issues**: Restart Claude Desktop and look for 🔗 MCP connection icon
+2. **Invalid API Key**: Verify your `HABITIFY_API_KEY` in environment configuration
+3. **Tool Issues**: Test with MCP Inspector: `npx @modelcontextprotocol/inspector npx -y @sargonpiraev/habitify-mcp-server`
 
-#### Package Not Found
+### Common Issues
+
+**📦 Package Not Found**
 
 ```bash
-# Verify NPM installation
-npm list -g @sargonpiraev/habitify-mcp-server
-npm install -g @sargonpiraev/habitify-mcp-server --force
-
-# Clear npm cache if needed
 npm cache clean --force
-```
-
-#### Permission Issues
-
-```bash
-# Fix npm permissions (macOS/Linux)
-sudo chown -R $(whoami) $(npm config get prefix)/{lib/node_modules,bin,share}
-
-# Or use local installation
 npx -y @sargonpiraev/habitify-mcp-server
 ```
 
-### Configuration Issues
+**🔧 Configuration Problems**
 
-#### Claude Desktop Configuration
+- Check JSON syntax in your MCP config file
+- Verify environment variables are set correctly
+- Ensure Habitify API key is valid
 
-1. **File Location Issues**:
+**🔗 Connection Problems**
 
-   - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
-   - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-   - Linux: `~/.config/Claude/claude_desktop_config.json`
+- Close and restart your MCP client completely
+- Check MCP logs for error messages
+- Test API key: Visit [Habitify Settings](https://habitify.me) and verify key
 
-2. **JSON Syntax Validation**:
+### Get Help
 
-   ```bash
-   # Validate your config file
-   python -m json.tool claude_desktop_config.json
-   ```
+- 🐛 [Report Issues](https://github.com/sargonpiraev/habitify-mcp-server/issues)
+- 📧 [Email Support](mailto:sargonpiraev@gmail.com)
 
-3. **Common Configuration Mistakes**:
-   - Missing commas between server entries
-   - Incorrect environment variable names
-   - Invalid Habitify API key format
-
-#### Environment Variables
-
-```bash
-# Check if environment variables are set
-echo $HABITIFY_API_KEY
-
-# Test API key validity
-curl -H "Authorization: Bearer $HABITIFY_API_KEY" https://api.habitify.me/journal
-```
-
-### Runtime Issues
-
-#### Connection Problems
-
-1. **Restart Steps**:
-
-   - Close Claude Desktop completely
-   - Wait 10 seconds
-   - Restart Claude Desktop
-   - Look for 🔗 MCP connection icon
-
-2. **Check Logs**:
-
-   - Claude Desktop → Settings → Feature Preview → View Logs
-   - Look for MCP-related errors
-
-3. **Test Connection**:
-   ```bash
-   # Test server directly
-   npx @modelcontextprotocol/inspector npx -y @sargonpiraev/habitify-mcp-server
-   ```
-
-#### API Authentication Issues
-
-```bash
-# Verify API key is valid
-npx @sargonpiraev/habitify-mcp-server --list-tools
-
-# Check if API key has proper permissions
-# Ensure API key is not expired or revoked
-```
-
-### Getting Additional Help
-
-1. **Debug with Inspector**:
-
-   ```bash
-   npx @modelcontextprotocol/inspector npx -y @sargonpiraev/habitify-mcp-server
-   ```
-
-2. **Enable Verbose Logging**:
-
-   ```bash
-   DEBUG=mcp* npx @sargonpiraev/habitify-mcp-server
-   ```
-
-3. **Community Support**:
-
-   - 🐛 Report bugs on [GitLab Issues](https://gitlab.com/sargonpiraev/habitify-mcp-server/-/issues)
-   - 📧 Email support: [sargonpiraev@gmail.com](mailto:sargonpiraev@gmail.com)
-
-4. **Provide Debug Information**:
-   When reporting issues, include:
-   - Operating system and version
-   - Node.js version (`node --version`)
-   - NPM version (`npm --version`)
-   - Your configuration file (redact API key)
-   - Complete error messages and logs
-   - Steps to reproduce the issue
-
-## 🤝 Connect with Us
+## 🤝 Connect with Author
 
 Stay updated and get support:
 
 - 🌐 Visit [sargonpiraev.com](https://sargonpiraev.com)
 - 📧 Email: [sargonpiraev@gmail.com](mailto:sargonpiraev@gmail.com)
-- 🔗 GitLab: [sargonpiraev](https://gitlab.com/sargonpiraev)
 
 ## 📄 License
 
