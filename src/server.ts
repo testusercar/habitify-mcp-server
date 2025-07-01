@@ -1,11 +1,9 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import { createLogger } from './utils/create-logger.js'
 import { isToolEnabled } from './utils/is-tool-enabled.js'
 import * as tools from './tools/index.js'
 import { ToolWithHandle } from './types.js'
 
-// Create and configure MCP server
-export const server = new McpServer(
+const server = new McpServer(
   {
     name: 'Habitify MCP Server',
     version: '2.0.0',
@@ -30,20 +28,14 @@ export const server = new McpServer(
   }
 )
 
-// Create logger
-export const logger = createLogger(server)
-
 // Register tools based on environment configuration
 Object.values(tools).forEach((tool: ToolWithHandle) => {
   if (isToolEnabled(tool.name)) {
     server.tool(tool.name, tool.description, tool.inputSchema.shape, tool.handle)
-    logger.debug(`✅ Registered tool: ${tool.name}`)
+    console.error(`✅ Registered tool: ${tool.name}`)
   } else {
-    logger.debug(`⏭️ Skipped tool: ${tool.name}`)
+    console.error(`⏭️ Skipped tool: ${tool.name}`)
   }
 })
 
-// Default export for Smithery AI integration
-export default function createServer() {
-  return server
-}
+export default server

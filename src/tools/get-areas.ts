@@ -1,6 +1,7 @@
 import { createTool } from '../types.js'
 import { habitifyClient } from '../client.js'
 import { z } from 'zod'
+import { handleError } from '../utils/handle-error.js'
 
 export const getAreasTool = createTool({
   name: 'get-areas',
@@ -11,10 +12,7 @@ export const getAreasTool = createTool({
       const result = await habitifyClient.getAreas()
       return { content: [{ type: 'text', text: JSON.stringify(result) }] }
     } catch (error) {
-      return {
-        isError: true,
-        content: [{ type: 'text', text: `Error ${error}` }],
-      }
+      return handleError(error)
     }
   },
 })

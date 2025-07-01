@@ -3,16 +3,16 @@ import { z } from 'zod'
 // Re-export types from habitify-api-client
 export * from '@sargonpiraev/habitify-api-client/build/types.js'
 
-type SuccessResult = {
+export type SuccessResult = {
   content: { type: 'text'; text: string }[]
 }
 
-type FailureResult = {
+export type FailureResult = {
   isError: true
   content: { type: 'text'; text: string }[]
 }
 
-type Result = SuccessResult | FailureResult
+export type Result = SuccessResult | FailureResult
 
 export type ToolWithHandle = {
   name: string

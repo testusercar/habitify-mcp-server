@@ -1,6 +1,7 @@
 import { createTool } from '../types.js'
 import { habitifyClient } from '../client.js'
 import { z } from 'zod'
+import { handleError } from '../utils/handle-error.js'
 
 export const addLogTool = createTool({
   name: 'add-log',
@@ -20,10 +21,7 @@ export const addLogTool = createTool({
       await habitifyClient.addLog({ habit_id, unit_type, value, target_date })
       return { content: [{ type: 'text', text: 'Log added successfully' }] }
     } catch (error) {
-      return {
-        isError: true,
-        content: [{ type: 'text', text: `Error ${error}` }],
-      }
+      return handleError(error)
     }
   },
 })

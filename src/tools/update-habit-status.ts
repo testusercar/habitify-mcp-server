@@ -1,6 +1,7 @@
 import { createTool } from '../types.js'
 import { habitifyClient } from '../client.js'
 import { z } from 'zod'
+import { handleError } from '../utils/handle-error.js'
 
 export const updateHabitStatusTool = createTool({
   name: 'update-habit-status',
@@ -15,10 +16,7 @@ export const updateHabitStatusTool = createTool({
       await habitifyClient.updateHabitStatus({ habit_id, status, target_date })
       return { content: [{ type: 'text', text: 'Status updated successfully' }] }
     } catch (error) {
-      return {
-        isError: true,
-        content: [{ type: 'text', text: `Error ${error}` }],
-      }
+      return handleError(error)
     }
   },
 })

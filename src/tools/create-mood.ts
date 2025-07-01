@@ -1,6 +1,7 @@
 import { createTool } from '../types.js'
 import { habitifyClient } from '../client.js'
 import { z } from 'zod'
+import { handleError } from '../utils/handle-error.js'
 
 export const createMoodTool = createTool({
   name: 'create-mood',
@@ -14,10 +15,7 @@ export const createMoodTool = createTool({
       await habitifyClient.createMood({ value, created_at })
       return { content: [{ type: 'text', text: 'Mood created successfully' }] }
     } catch (error) {
-      return {
-        isError: true,
-        content: [{ type: 'text', text: `Error ${error}` }],
-      }
+      return handleError(error)
     }
   },
 })

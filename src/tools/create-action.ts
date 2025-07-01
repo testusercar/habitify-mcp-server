@@ -1,6 +1,7 @@
 import { createTool } from '../types.js'
 import { habitifyClient } from '../client.js'
 import { z } from 'zod'
+import { handleError } from '../utils/handle-error.js'
 
 export const createActionTool = createTool({
   name: 'create-action',
@@ -15,10 +16,7 @@ export const createActionTool = createTool({
       await habitifyClient.createAction({ habit_id, title, remind_at })
       return { content: [{ type: 'text', text: 'Action created successfully' }] }
     } catch (error) {
-      return {
-        isError: true,
-        content: [{ type: 'text', text: `Error ${error}` }],
-      }
+      return handleError(error)
     }
   },
 })

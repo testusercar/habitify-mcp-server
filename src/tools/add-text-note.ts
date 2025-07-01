@@ -1,6 +1,7 @@
 import { createTool } from '../types.js'
 import { habitifyClient } from '../client.js'
 import { z } from 'zod'
+import { handleError } from '../utils/handle-error.js'
 
 export const addTextNoteTool = createTool({
   name: 'add-text-note',
@@ -15,10 +16,7 @@ export const addTextNoteTool = createTool({
       await habitifyClient.addTextNote({ habit_id, content, created_at })
       return { content: [{ type: 'text', text: 'Text note added successfully' }] }
     } catch (error) {
-      return {
-        isError: true,
-        content: [{ type: 'text', text: `Error ${error}` }],
-      }
+      return handleError(error)
     }
   },
 })

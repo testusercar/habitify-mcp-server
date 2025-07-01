@@ -1,6 +1,7 @@
 import { createTool } from '../types.js'
 import { habitifyClient } from '../client.js'
 import { z } from 'zod'
+import { handleError } from '../utils/handle-error.js'
 
 export const deleteActionTool = createTool({
   name: 'delete-action',
@@ -14,10 +15,7 @@ export const deleteActionTool = createTool({
       await habitifyClient.deleteAction({ habit_id, action_id })
       return { content: [{ type: 'text', text: 'Action deleted successfully' }] }
     } catch (error) {
-      return {
-        isError: true,
-        content: [{ type: 'text', text: `Error ${error}` }],
-      }
+      return handleError(error)
     }
   },
 })
