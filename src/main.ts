@@ -12,7 +12,6 @@ async function main() {
 
   logger.info('✅ Habitify MCP Server started successfully')
 
-  // Log configuration after connection
   const { toolGlobPatterns } = await import('./utils/is-tool-enabled.js')
   const { env } = await import('./env.js')
   if (toolGlobPatterns.length > 0) {
