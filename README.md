@@ -178,4 +178,4 @@ Your support helps me continue developing and maintaining these tools, and motiv
 
 - 🌐 Visit [sargonpiraev.com](https://sargonpiraev.com)
 - 📧 Email: [sargonpiraev@gmail.com](mailto:sargonpiraev@gmail.com)
-- 💬 Join our [Discord Community](https://discord.gg/ZsWGxRGj)
+- 💬 Join [Discord](https://discord.gg/ZsWGxRGj)
