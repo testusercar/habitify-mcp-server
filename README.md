@@ -5,8 +5,6 @@
 ![license](https://img.shields.io/github/license/sargonpiraev/habitify-mcp-server)
 ![smithery badge](https://smithery.ai/badge/@sargonpiraev/habitify-mcp-server)
 ![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-blue)
-[![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_MCP-0098FF)](vscode:mcp/install?%7B%22name%22%3A%22habitify-mcp-server%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@sargonpiraev/habitify-mcp-server%22%5D%7D)
-[![Install in Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=habitify-mcp-server&config=eyJjb21tYW5kIjoibnB4IC15IEBzYXJnb25waXJhZXYvaGFiaXRpZnktbWNwLXNlcnZlciJ9)
 [![Join Discord](https://img.shields.io/discord/1331631275464671347?color=7289da&label=Discord&logo=discord)](https://discord.gg/ZsWGxRGj)
 
 MCP server for seamless Habitify API integration with AI assistants. Track habits, manage mood logs, create notes, and automate habit tracking workflows directly from Claude, Cursor, and other MCP-compatible AI tools.
@@ -39,13 +37,25 @@ Before installation, you'll need a Habitify API key:
 
 ## Installation
 
-**Installing via Smithery**
+<details>
+<summary><b>Installing via Smithery</b></summary>
+
+To install Habitify MCP Server for any client automatically via [Smithery](https://smithery.ai):
 
 ```bash
 npx -y @smithery/cli@latest install @sargonpiraev/habitify-mcp-server --client <CLIENT_NAME>
 ```
 
-**Install in Cursor**
+</details>
+
+<details>
+<summary><b>Install in Cursor</b></summary>
+
+#### Cursor One-Click Installation
+
+[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=habitify-mcp-server&config=eyJjb21tYW5kIjoibnB4IC15IEBzYXJnb25waXJhZXYvaGFiaXRpZnktbWNwLXNlcnZlciJ9)
+
+#### Manual Configuration
 
 Add to your Cursor `~/.cursor/mcp.json` file:
 
@@ -63,7 +73,34 @@ Add to your Cursor `~/.cursor/mcp.json` file:
 }
 ```
 
-**Install in Claude Desktop**
+</details>
+
+<details>
+<summary><b>Install in VS Code</b></summary>
+
+[![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_MCP-0098FF)](vscode:mcp/install?%7B%22name%22%3A%22habitify-mcp-server%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22@sargonpiraev/habitify-mcp-server%22%5D%7D)
+
+Or add manually to your VS Code settings:
+
+```json
+"mcp": {
+  "servers": {
+    "habitify-mcp-server": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@sargonpiraev/habitify-mcp-server"],
+      "env": {
+        "HABITIFY_API_KEY": "your-habitify-api-key"
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><b>Install in Claude Desktop</b></summary>
 
 Add to your `claude_desktop_config.json`:
 
@@ -80,6 +117,8 @@ Add to your `claude_desktop_config.json`:
   }
 }
 ```
+
+</details>
 
 ## Available Tools
 
