@@ -3,6 +3,7 @@
 ![npm version](https://img.shields.io/npm/v/@sargonpiraev/habitify-mcp-server)
 ![npm downloads](https://img.shields.io/npm/dw/@sargonpiraev/habitify-mcp-server)
 ![license](https://img.shields.io/github/license/sargonpiraev/habitify-mcp-server)
+![pipeline status](https://gitlab.com/sargonpiraev/habitify-mcp-server/badges/main/pipeline.svg)
 ![smithery badge](https://smithery.ai/badge/@sargonpiraev/habitify-mcp-server)
 ![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-blue)
 [![Join Discord](https://img.shields.io/discord/1331631275464671347?color=7289da&label=Discord&logo=discord)](https://discord.gg/ZsWGxRGj)
