@@ -165,16 +165,6 @@ TOOL_GLOB_PATTERNS="get-journal,add-log,create-mood" npx @sargonpiraev/habitify-
 
 **Total: 23 tools available** 🎯
 
-## Support This Project
-
-Hi! I'm Sargon, a software engineer passionate about AI tools and automation. I create open-source MCP servers to help developers integrate AI assistants with their favorite services.
-
-Your support helps me continue developing and maintaining these tools, and motivates me to create new integrations that make AI assistants even more powerful! ☕
-
-[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/sargonpiraev)
-[![Ko-fi](https://img.shields.io/badge/Ko--fi-F16061?logo=ko-fi&logoColor=white)](https://ko-fi.com/sargonpiraev)
-[![Patreon](https://img.shields.io/badge/Patreon-F96854?logo=patreon&logoColor=white)](https://patreon.com/sargonpiraev)
-
 ## Connect with Author
 
 - 🌐 Visit [sargonpiraev.com](https://sargonpiraev.com)
