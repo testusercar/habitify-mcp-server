@@ -1,11 +1,7 @@
 # Habitify MCP Server
 
 ![npm version](https://img.shields.io/npm/v/@sargonpiraev/habitify-mcp-server)
-![npm downloads](https://img.shields.io/npm/dw/@sargonpiraev/habitify-mcp-server)
-![license](https://img.shields.io/github/license/sargonpiraev/habitify-mcp-server)
 ![smithery badge](https://smithery.ai/badge/@sargonpiraev/habitify-mcp-server)
-![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-blue)
-[![Join Discord](https://img.shields.io/discord/1331631275464671347?color=7289da&label=Discord&logo=discord)](https://discord.gg/ZsWGxRGj)
 
 MCP server for Habitify API integration - track habits, manage mood logs, and automate habit tracking workflows directly from AI assistants like Claude and Cursor
 
