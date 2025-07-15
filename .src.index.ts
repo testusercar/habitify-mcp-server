@@ -17,13 +17,15 @@ const envSchema = z.object({
   //  LOG_LEVEL: z.enum(['debug', 'info', 'notice', 'warning', 'error']).default('info').optional(),
 })
 
+type EnvConfig = z.infer<typeof envSchema>
+
 // Parse and validate environment variables
 const env = envSchema.parse(process.env)
 
 const mcpServer = new McpServer(
   {
     name: '@sargonpiraev/habitify-mcp-server',
-    version: '',
+    version: '0.0.1',
   },
   {
     capabilities: {
@@ -36,44 +38,22 @@ const mcpServer = new McpServer(
 
 const logger = {
   log: (...message: (string | object)[]) =>
-    mcpServer.server.sendLoggingMessage({
-      level: 'info',
-      data: message.join(' '),
-    }),
+    mcpServer.server.sendLoggingMessage({ level: 'info', data: message.join(' ') }),
   error: (...message: (string | object)[]) =>
-    mcpServer.server.sendLoggingMessage({
-      level: 'error',
-      data: message.join(' '),
-    }),
+    mcpServer.server.sendLoggingMessage({ level: 'error', data: message.join(' ') }),
   debug: (...message: (string | object)[]) =>
-    mcpServer.server.sendLoggingMessage({
-      level: 'debug',
-      data: message.join(' '),
-    }),
+    mcpServer.server.sendLoggingMessage({ level: 'debug', data: message.join(' ') }),
 }
 
 // Axios client setup
 const apiClient: AxiosInstance = axios.create({
-  baseURL: 'https://api.habitify.me',
+  baseURL: '',
   headers: {
+    'User-Agent': '',
     Accept: 'application/json',
   },
   timeout: 30000,
 })
-
-// Add request interceptor for environment variables
-apiClient.interceptors.request.use(
-  (config) => {
-    if (env.HABITIFY_API_KEY) {
-      config.headers['X-API-Key'] = env.HABITIFY_API_KEY
-    }
-
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
 
 function handleError(error: unknown) {
   console.error(error)
@@ -94,23 +74,6 @@ function handleError(error: unknown) {
 }
 
 // Tools
-mcpServer.tool('get-journal', `Get habit journal for a specific date`, {}, async (args) => {
-  try {
-    const response = await apiClient.get('/journal', {
-      params: args,
-    })
-    return {
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify(response.data, null, 2),
-        },
-      ],
-    }
-  } catch (error) {
-    return handleError(error)
-  }
-})
 
 async function main() {
   const transport = new StdioServerTransport()
