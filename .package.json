@@ -17,11 +17,7 @@
   "main": "./build/main.js",
   "types": "./build/main.d.ts",
   "type": "module",
-  "files": [
-    "build/",
-    "README.md",
-    "LICENSE"
-  ],
+  "files": ["build/", "README.md", "LICENSE"],
   "bin": {},
   "scripts": {
     "test": "jest --passWithNoTests --coverage",
