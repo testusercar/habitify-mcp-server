@@ -1,6 +1,6 @@
-# Contributing to Habitify MCP Server
+# Contributing to Habitify
 
-Thank you for your interest in contributing to the Habitify MCP Server! This guide will help you get started with development.
+Thank you for your interest in contributing to the Habitify! This guide will help you get started with development.
 
 ## 🔧 Development Setup
 
@@ -135,4 +135,4 @@ We use semantic-release for automated versioning and publishing:
 
 ## 📄 License
 
-By contributing to Habitify MCP Server, you agree that your contributions will be licensed under the MIT License.
+By contributing to Habitify, you agree that your contributions will be licensed under the MIT License.

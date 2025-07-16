@@ -7,17 +7,12 @@ import axios, { AxiosInstance } from 'axios'
 import dotenv from 'dotenv'
 import { CallToolResult } from '@modelcontextprotocol/sdk/types.js'
 
-// Load environment variables
 dotenv.config()
 
-// Environment configuration schema
 const envSchema = z.object({
   HABITIFY_API_KEY: z.string().min(1),
-  //  TOOL_GLOB_PATTERNS: z.string().optional(),
-  //  LOG_LEVEL: z.enum(['debug', 'info', 'notice', 'warning', 'error']).default('info').optional(),
 })
 
-// Parse and validate environment variables
 const env = envSchema.parse(process.env)
 
 const mcpServer = new McpServer(
@@ -43,7 +38,6 @@ const logger = {
     mcpServer.server.sendLoggingMessage({ level: 'debug', data: message.join(' ') }),
 }
 
-// Axios client setup
 const apiClient: AxiosInstance = axios.create({
   baseURL: 'https://api.habitify.me',
   headers: {
@@ -52,7 +46,6 @@ const apiClient: AxiosInstance = axios.create({
   timeout: 30000,
 })
 
-// Add request interceptor for environment variables
 apiClient.interceptors.request.use(
   (config) => {
     if (env.HABITIFY_API_KEY) {
@@ -95,139 +88,69 @@ function handleError(error: unknown): CallToolResult {
   } as CallToolResult
 }
 
-// Tools
-mcpServer.tool(
-  'get-journal',
-  `Get habit journal for a specific date`,
-  {
-    target_date: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/)
-      .optional(),
-    order_by: z.any().optional(),
-    status: z.any().optional(),
-    area_id: z.string().optional(),
-    time_of_day: z.any().optional(),
-  },
-  async (args) => {
-    try {
-      const response = await apiClient.get('/journal', {
-        params: args,
-      })
-      return handleResult(response.data)
-    } catch (error) {
-      return handleError(error)
-    }
+mcpServer.tool('get-journal', `Get habit journal for a specific date`, {}, async (args) => {
+  try {
+    const response = await apiClient.get('/journal', {
+      params: args,
+    })
+    return handleResult(response.data)
+  } catch (error) {
+    return handleError(error)
   }
-)
+})
 
-mcpServer.tool(
-  'post-logs-by-id',
-  `Add a habit log`,
-  {
-    habit_id: z.string().min(1),
-  },
-  async (args) => {
-    try {
-      // Extract path parameters and request data
-      const { habit_id, ...requestData } = args
-      const url = `/logs/${habit_id}`
-
-      const response = await apiClient.post(url, requestData)
-      return handleResult(response.data)
-    } catch (error) {
-      return handleError(error)
-    }
+mcpServer.tool('post-logs-by-id', `Add a habit log`, {}, async (args) => {
+  try {
+    const response = await apiClient.post('/logs/{habit_id}', args)
+    return handleResult(response.data)
+  } catch (error) {
+    return handleError(error)
   }
-)
+})
 
-mcpServer.tool(
-  'delete-logs-by-id',
-  `Delete habit logs in date range`,
-  {
-    habit_id: z.string().min(1),
-    start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-    end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  },
-  async (args) => {
-    try {
-      // Extract path parameters and query parameters
-      const { habit_id, ...queryParams } = args
-      const url = `/logs/${habit_id}`
-
-      const response = await apiClient.delete(url, {
-        params: queryParams,
-      })
-      return handleResult(response.data)
-    } catch (error) {
-      return handleError(error)
-    }
+mcpServer.tool('delete-logs-by-id', `Delete habit logs in date range`, {}, async (args) => {
+  try {
+    const response = await apiClient.delete('/logs/{habit_id}', {
+      params: args,
+    })
+    return handleResult(response.data)
+  } catch (error) {
+    return handleError(error)
   }
-)
+})
 
-mcpServer.tool(
-  'delete-logs-by-id-by-id',
-  `Delete a specific habit log`,
-  {
-    habit_id: z.string().min(1),
-    log_id: z.string().min(1),
-  },
-  async (args) => {
-    try {
-      // Extract path parameters and query parameters
-      const { habit_id, log_id, ...queryParams } = args
-      const url = `/logs/${habit_id}/${log_id}`
-
-      const response = await apiClient.delete(url, {
-        params: queryParams,
-      })
-      return handleResult(response.data)
-    } catch (error) {
-      return handleError(error)
-    }
+mcpServer.tool('delete-logs-by-id-by-id', `Delete a specific habit log`, {}, async (args) => {
+  try {
+    const response = await apiClient.delete('/logs/{habit_id}/{log_id}', {
+      params: args,
+    })
+    return handleResult(response.data)
+  } catch (error) {
+    return handleError(error)
   }
-)
+})
 
-mcpServer.tool(
-  'get-habits',
-  `Get all habits`,
-  {
-    status: z.any().optional(),
-    area_id: z.string().optional(),
-  },
-  async (args) => {
-    try {
-      const response = await apiClient.get('/habits', {
-        params: args,
-      })
-      return handleResult(response.data)
-    } catch (error) {
-      return handleError(error)
-    }
+mcpServer.tool('get-habits', `Get all habits`, {}, async (args) => {
+  try {
+    const response = await apiClient.get('/habits', {
+      params: args,
+    })
+    return handleResult(response.data)
+  } catch (error) {
+    return handleError(error)
   }
-)
+})
 
-mcpServer.tool(
-  'get-habits-by-id',
-  `Get habit details`,
-  {
-    habit_id: z.string().min(1),
-  },
-  async (args) => {
-    try {
-      // Extract path parameters and query parameters
-      const { habit_id, ...queryParams } = args
-      const url = `/habits/${habit_id}`
-
-      const response = await apiClient.get(url, {
-        params: queryParams,
-      })
-      return handleResult(response.data)
-    } catch (error) {
-      return handleError(error)
-    }
+mcpServer.tool('get-habits-by-id', `Get habit details`, {}, async (args) => {
+  try {
+    const response = await apiClient.get('/habits/{habit_id}', {
+      params: args,
+    })
+    return handleResult(response.data)
+  } catch (error) {
+    return handleError(error)
   }
-)
+})
 
 mcpServer.tool('get-areas', `Get all areas`, {}, async (args) => {
   try {
@@ -240,30 +163,16 @@ mcpServer.tool('get-areas', `Get all areas`, {}, async (args) => {
   }
 })
 
-mcpServer.tool(
-  'get-moods',
-  `Get mood entries`,
-  {
-    start_date: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/)
-      .optional(),
-    end_date: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/)
-      .optional(),
-  },
-  async (args) => {
-    try {
-      const response = await apiClient.get('/moods', {
-        params: args,
-      })
-      return handleResult(response.data)
-    } catch (error) {
-      return handleError(error)
-    }
+mcpServer.tool('get-moods', `Get mood entries`, {}, async (args) => {
+  try {
+    const response = await apiClient.get('/moods', {
+      params: args,
+    })
+    return handleResult(response.data)
+  } catch (error) {
+    return handleError(error)
   }
-)
+})
 
 mcpServer.tool('post-moods', `Add mood entry`, {}, async (args) => {
   try {
@@ -274,30 +183,16 @@ mcpServer.tool('post-moods', `Add mood entry`, {}, async (args) => {
   }
 })
 
-mcpServer.tool(
-  'get-notes',
-  `Get notes`,
-  {
-    start_date: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/)
-      .optional(),
-    end_date: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/)
-      .optional(),
-  },
-  async (args) => {
-    try {
-      const response = await apiClient.get('/notes', {
-        params: args,
-      })
-      return handleResult(response.data)
-    } catch (error) {
-      return handleError(error)
-    }
+mcpServer.tool('get-notes', `Get notes`, {}, async (args) => {
+  try {
+    const response = await apiClient.get('/notes', {
+      params: args,
+    })
+    return handleResult(response.data)
+  } catch (error) {
+    return handleError(error)
   }
-)
+})
 
 mcpServer.tool('post-notes', `Add note`, {}, async (args) => {
   try {
