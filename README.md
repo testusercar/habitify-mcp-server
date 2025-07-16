@@ -107,7 +107,20 @@ Add to your `claude_desktop_config.json`:
 
 ## Available Tools
 
-Tools documentation coming soon.
+- **`get-journal`**: Get habit journal for a specific date
+- **`post-logs-by-id`**: Add a habit log
+- **`delete-logs-by-id`**: Delete habit logs in date range
+- **`delete-logs-by-id-by-id`**: Delete a specific habit log
+- **`get-habits`**: Get all habits
+- **`get-habits-by-id`**: Get habit details
+- **`get-areas`**: Get all areas
+- **`get-moods`**: Get mood entries
+- **`post-moods`**: Add mood entry
+- **`get-notes`**: Get notes
+- **`post-notes`**: Add note
+- **`get-actions`**: Get available actions
+
+**Total: 12 tools available** 🎯
 
 ## Support This Project
 
