@@ -66,7 +66,18 @@ apiClient.interceptors.request.use(
   }
 )
 
-function handleError(error: unknown) {
+function handleResult(data: unknown): CallToolResult {
+  return {
+    content: [
+      {
+        type: 'text',
+        text: JSON.stringify(data, null, 2),
+      },
+    ],
+  }
+}
+
+function handleError(error: unknown): CallToolResult {
   console.error(error)
   logger.error('Error occurred:', JSON.stringify(error))
 
@@ -85,19 +96,224 @@ function handleError(error: unknown) {
 }
 
 // Tools
-mcpServer.tool('get-journal', `Get habit journal for a specific date`, {}, async (args) => {
+mcpServer.tool(
+  'get-journal',
+  `Get habit journal for a specific date`,
+  {
+    target_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+    order_by: z.any().optional(),
+    status: z.any().optional(),
+    area_id: z.string().optional(),
+    time_of_day: z.any().optional(),
+  },
+  async (args) => {
+    try {
+      const response = await apiClient.get('/journal', {
+        params: args,
+      })
+      return handleResult(response.data)
+    } catch (error) {
+      return handleError(error)
+    }
+  }
+)
+
+mcpServer.tool(
+  'post-logs-by-id',
+  `Add a habit log`,
+  {
+    habit_id: z.string().min(1),
+  },
+  async (args) => {
+    try {
+      // Extract path parameters and request data
+      const { habit_id, ...requestData } = args
+      const url = `/logs/${habit_id}`
+
+      const response = await apiClient.post(url, requestData)
+      return handleResult(response.data)
+    } catch (error) {
+      return handleError(error)
+    }
+  }
+)
+
+mcpServer.tool(
+  'delete-logs-by-id',
+  `Delete habit logs in date range`,
+  {
+    habit_id: z.string().min(1),
+    start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  },
+  async (args) => {
+    try {
+      // Extract path parameters and query parameters
+      const { habit_id, ...queryParams } = args
+      const url = `/logs/${habit_id}`
+
+      const response = await apiClient.delete(url, {
+        params: queryParams,
+      })
+      return handleResult(response.data)
+    } catch (error) {
+      return handleError(error)
+    }
+  }
+)
+
+mcpServer.tool(
+  'delete-logs-by-id-by-id',
+  `Delete a specific habit log`,
+  {
+    habit_id: z.string().min(1),
+    log_id: z.string().min(1),
+  },
+  async (args) => {
+    try {
+      // Extract path parameters and query parameters
+      const { habit_id, log_id, ...queryParams } = args
+      const url = `/logs/${habit_id}/${log_id}`
+
+      const response = await apiClient.delete(url, {
+        params: queryParams,
+      })
+      return handleResult(response.data)
+    } catch (error) {
+      return handleError(error)
+    }
+  }
+)
+
+mcpServer.tool(
+  'get-habits',
+  `Get all habits`,
+  {
+    status: z.any().optional(),
+    area_id: z.string().optional(),
+  },
+  async (args) => {
+    try {
+      const response = await apiClient.get('/habits', {
+        params: args,
+      })
+      return handleResult(response.data)
+    } catch (error) {
+      return handleError(error)
+    }
+  }
+)
+
+mcpServer.tool(
+  'get-habits-by-id',
+  `Get habit details`,
+  {
+    habit_id: z.string().min(1),
+  },
+  async (args) => {
+    try {
+      // Extract path parameters and query parameters
+      const { habit_id, ...queryParams } = args
+      const url = `/habits/${habit_id}`
+
+      const response = await apiClient.get(url, {
+        params: queryParams,
+      })
+      return handleResult(response.data)
+    } catch (error) {
+      return handleError(error)
+    }
+  }
+)
+
+mcpServer.tool('get-areas', `Get all areas`, {}, async (args) => {
   try {
-    const response = await apiClient.get('/journal', {
+    const response = await apiClient.get('/areas', {
       params: args,
     })
-    return {
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify(response.data, null, 2),
-        },
-      ],
+    return handleResult(response.data)
+  } catch (error) {
+    return handleError(error)
+  }
+})
+
+mcpServer.tool(
+  'get-moods',
+  `Get mood entries`,
+  {
+    start_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+    end_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+  },
+  async (args) => {
+    try {
+      const response = await apiClient.get('/moods', {
+        params: args,
+      })
+      return handleResult(response.data)
+    } catch (error) {
+      return handleError(error)
     }
+  }
+)
+
+mcpServer.tool('post-moods', `Add mood entry`, {}, async (args) => {
+  try {
+    const response = await apiClient.post('/moods', args)
+    return handleResult(response.data)
+  } catch (error) {
+    return handleError(error)
+  }
+})
+
+mcpServer.tool(
+  'get-notes',
+  `Get notes`,
+  {
+    start_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+    end_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+  },
+  async (args) => {
+    try {
+      const response = await apiClient.get('/notes', {
+        params: args,
+      })
+      return handleResult(response.data)
+    } catch (error) {
+      return handleError(error)
+    }
+  }
+)
+
+mcpServer.tool('post-notes', `Add note`, {}, async (args) => {
+  try {
+    const response = await apiClient.post('/notes', args)
+    return handleResult(response.data)
+  } catch (error) {
+    return handleError(error)
+  }
+})
+
+mcpServer.tool('get-actions', `Get available actions`, {}, async (args) => {
+  try {
+    const response = await apiClient.get('/actions', {
+      params: args,
+    })
+    return handleResult(response.data)
   } catch (error) {
     return handleError(error)
   }

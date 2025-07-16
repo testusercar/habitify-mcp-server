@@ -107,9 +107,7 @@ Add to your `claude_desktop_config.json`:
 
 ## Available Tools
 
-- **`get-journal`**: Execute get-journal operation
-
-**Total: 1 tools available** 🎯
+Tools documentation coming soon.
 
 ## Support This Project
 
