@@ -49,7 +49,7 @@ const apiClient: AxiosInstance = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     if (env.HABITIFY_API_KEY) {
-      config.headers['X-API-Key'] = env.HABITIFY_API_KEY
+      config.headers['Authorization'] = env.HABITIFY_API_KEY
     }
 
     return config
@@ -75,7 +75,7 @@ function handleError(error: unknown): CallToolResult {
   logger.error('Error occurred:', JSON.stringify(error))
 
   if (axios.isAxiosError(error)) {
-    const message = error.response?.data?.description || error.message
+    const message = error.response?.data?.message || error.message
     return {
       isError: true,
       content: [{ type: 'text', text: `API Error: ${message}` }],
@@ -111,7 +111,7 @@ mcpServer.tool(
 )
 
 mcpServer.tool(
-  'post-logs',
+  'add-habit-log',
   `Add a habit log`,
   {
     habit_id: z.string(),
@@ -130,7 +130,7 @@ mcpServer.tool(
 )
 
 mcpServer.tool(
-  'delete-logs',
+  'delete-habit-logs-range',
   `Delete habit logs in date range`,
   {
     habit_id: z.string(),
@@ -153,7 +153,7 @@ mcpServer.tool(
 )
 
 mcpServer.tool(
-  'delete-logs',
+  'delete-habit-log',
   `Delete a specific habit log`,
   {
     habit_id: z.string(),
@@ -194,7 +194,7 @@ mcpServer.tool(
 )
 
 mcpServer.tool(
-  'get-habits',
+  'get-habit',
   `Get habit details`,
   {
     habit_id: z.string(),
@@ -244,7 +244,7 @@ mcpServer.tool(
   }
 )
 
-mcpServer.tool('post-moods', `Add mood entry`, {}, async (args) => {
+mcpServer.tool('add-mood', `Add mood entry`, {}, async (args) => {
   try {
     const response = await apiClient.post('/moods', args)
     return handleResult(response.data)
