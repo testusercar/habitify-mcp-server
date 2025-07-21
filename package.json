@@ -31,7 +31,7 @@
     "commitlint": "commitlint --edit",
     "typecheck": "tsc --noEmit",
     "audit": "npm audit --omit=dev",
-    "inspect": "npx @modelcontextprotocol/inspector node ./build/main.js"
+    "inspect": "npx @modelcontextprotocol/inspector --config mcp.json --server habitify"
   },
   "engines": {
     "node": ">=18.0.0"

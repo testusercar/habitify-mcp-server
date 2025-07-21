@@ -1,4 +1,4 @@
-#  MCP Server 🔧
+# Habitify API MCP Server 🔧
 
 ![npm version](https://img.shields.io/npm/v/@sargonpiraev/habitify-mcp-server)
 ![npm downloads](https://img.shields.io/npm/dw/@sargonpiraev/habitify-mcp-server)
@@ -12,19 +12,17 @@
 
 ## Features
 
-- 🔌 **Seamless AI Integration**: Direct  API access from Claude, Cursor, and VS Code
-- 🤖 **Automated Workflows**: Automate  operations and data access
-- 📊 **Complete API Coverage**: 12+ tools covering all major  features
-- ⚡ **Real-time Access**: Access  data instantly from AI assistants
+- 🔌 **Seamless AI Integration**: Direct Habitify API API access from Claude, Cursor, and VS Code
+- 🤖 **Automated Workflows**: Automate Habitify API operations and data access
+- 📊 **Complete API Coverage**: 12+ tools covering all major Habitify API features
+- ⚡ **Real-time Access**: Access Habitify API data instantly from AI assistants
 - 🔧 **Professional Integration**: Error handling, validation, and comprehensive logging
-
-Add `use habitify` to your prompt in Cursor or Claude.
 
 ## Get Your Credentials
 
-Before installation, you'll need a  API key:
+Before installation, you'll need a Habitify API API key:
 
-1. Open  app or web interface
+1. Open Habitify API app or web interface
 2. Go to **Settings → Account → API Access**
 3. Generate new API key or copy existing one
 4. Save this key for the installation steps below
@@ -32,7 +30,7 @@ Before installation, you'll need a  API key:
 ## Requirements
 
 - Node.js >= v18.0.0
--  API key
+- Habitify API API key
 - Cursor, VS Code, Claude Desktop or another MCP Client
 
 ## Installation
@@ -40,7 +38,7 @@ Before installation, you'll need a  API key:
 <details>
 <summary><b>Installing via Smithery</b></summary>
 
-To install  MCP Server for any client automatically via [Smithery](https://smithery.ai):
+To install Habitify API MCP Server for any client automatically via [Smithery](https://smithery.ai):
 
 ```bash
 npx -y @smithery/cli@latest install @sargonpiraev/habitify-mcp-server --client <CLIENT_NAME>
@@ -122,7 +120,20 @@ Add to your `claude_desktop_config.json`:
 
 ## Available Tools
 
-See the generated documentation for available tools.
+- **`get-journal`**: Get habit journal for a specific date
+- **`add-habit-log`**: Add a habit log
+- **`delete-habit-logs-range`**: Delete habit logs in date range
+- **`delete-habit-log`**: Delete a specific habit log
+- **`get-habits`**: Get all habits
+- **`get-habit`**: Get habit details
+- **`get-areas`**: Get all areas
+- **`get-moods`**: Get mood entries
+- **`add-mood`**: Add mood entry
+- **`get-notes`**: Get notes
+- **`add-note`**: Add note
+- **`get-actions`**: Get available actions
+
+**Total: 12 tools available** 🎯
 
 ## Support This Project
 
