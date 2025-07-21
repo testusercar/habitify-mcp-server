@@ -1,7 +1,4 @@
-#!/usr/bin/env node
-
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod'
 import axios, { AxiosInstance } from 'axios'
 import dotenv from 'dotenv'
@@ -9,19 +6,17 @@ import { CallToolResult } from '@modelcontextprotocol/sdk/types.js'
 
 dotenv.config()
 
-const envSchema = z.object({
+export const envSchema = z.object({
   HABITIFY_API_KEY: z.string(),
 })
 
-const env = envSchema.parse(process.env)
-
-const mcpServer = new McpServer(
+export const mcpServer = new McpServer(
   {
     name: '@sargonpiraev/habitify-mcp-server',
-    version: '',
+    version: '1.0.0',
   },
   {
-    instructions: `API for Habitify habit tracking service`,
+    instructions: ``,
     capabilities: {
       tools: {},
       logging: {},
@@ -29,65 +24,53 @@ const mcpServer = new McpServer(
   }
 )
 
-const logger = {
-  log: (...message: (string | object)[]) =>
-    mcpServer.server.sendLoggingMessage({ level: 'info', data: message.join(' ') }),
-  error: (...message: (string | object)[]) =>
-    mcpServer.server.sendLoggingMessage({ level: 'error', data: message.join(' ') }),
-  debug: (...message: (string | object)[]) =>
-    mcpServer.server.sendLoggingMessage({ level: 'debug', data: message.join(' ') }),
-}
+export const env = envSchema.parse(process.env)
 
-const apiClient: AxiosInstance = axios.create({
-  baseURL: 'https://api.habitify.me',
+export const apiClient: AxiosInstance = axios.create({
+  baseURL: '',
   headers: {
-    Accept: 'application/json',
+    'Accept': 'application/json'
   },
-  timeout: 30000,
+  timeout: 30000
 })
 
-apiClient.interceptors.request.use(
-  (config) => {
-    if (env.HABITIFY_API_KEY) {
-      config.headers['Authorization'] = env.HABITIFY_API_KEY
-    }
-
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
+apiClient.interceptors.request.use((config) => {
+  if (env.HABITIFY_API_KEY) {
+    config.headers['Authorization'] = env.HABITIFY_API_KEY
   }
-)
+  
+  return config
+}, (error) => {
+  return Promise.reject(error)
+})
 
 function handleResult(data: unknown): CallToolResult {
   return {
-    content: [
-      {
-        type: 'text',
-        text: JSON.stringify(data, null, 2),
-      },
-    ],
+    content: [{ 
+      type: 'text', 
+      text: JSON.stringify(data, null, 2) 
+    }]
   }
 }
 
 function handleError(error: unknown): CallToolResult {
   console.error(error)
-  logger.error('Error occurred:', JSON.stringify(error))
-
+  
   if (axios.isAxiosError(error)) {
     const message = error.response?.data?.message || error.message
-    return {
-      isError: true,
-      content: [{ type: 'text', text: `API Error: ${message}` }],
+    return { 
+      isError: true, 
+      content: [{ type: 'text', text: `API Error: ${message}` }] 
     } as CallToolResult
   }
-
-  return {
-    isError: true,
-    content: [{ type: 'text', text: `Error: ${error}` }],
+  
+  return { 
+    isError: true, 
+    content: [{ type: 'text', text: `Error: ${error}` }] 
   } as CallToolResult
 }
 
+// Register tools
 mcpServer.tool(
   'get-journal',
   `Get habit journal for a specific date`,
@@ -100,9 +83,13 @@ mcpServer.tool(
   },
   async (args) => {
     try {
-      const response = await apiClient.get('/journal', {
-        params: args,
+      
+      const response = await apiClient.request({
+        method: 'GET',
+        url: '/journal',
+        params: args
       })
+      
       return handleResult(response.data)
     } catch (error) {
       return handleError(error)
@@ -120,8 +107,13 @@ mcpServer.tool(
     try {
       const { habit_id, ...requestData } = args
       const url = `/logs/${habit_id}`
-
-      const response = await apiClient.post(url, requestData)
+      
+      const response = await apiClient.request({
+        method: 'POST',
+        url: url,
+        data: requestData
+      })
+      
       return handleResult(response.data)
     } catch (error) {
       return handleError(error)
@@ -141,10 +133,13 @@ mcpServer.tool(
     try {
       const { habit_id, ...queryParams } = args
       const url = `/logs/${habit_id}`
-
-      const response = await apiClient.delete(url, {
-        params: queryParams,
+      
+      const response = await apiClient.request({
+        method: 'DELETE',
+        url: url,
+        params: queryParams
       })
+      
       return handleResult(response.data)
     } catch (error) {
       return handleError(error)
@@ -163,10 +158,13 @@ mcpServer.tool(
     try {
       const { habit_id, log_id, ...queryParams } = args
       const url = `/logs/${habit_id}/${log_id}`
-
-      const response = await apiClient.delete(url, {
-        params: queryParams,
+      
+      const response = await apiClient.request({
+        method: 'DELETE',
+        url: url,
+        params: queryParams
       })
+      
       return handleResult(response.data)
     } catch (error) {
       return handleError(error)
@@ -183,9 +181,13 @@ mcpServer.tool(
   },
   async (args) => {
     try {
-      const response = await apiClient.get('/habits', {
-        params: args,
+      
+      const response = await apiClient.request({
+        method: 'GET',
+        url: '/habits',
+        params: args
       })
+      
       return handleResult(response.data)
     } catch (error) {
       return handleError(error)
@@ -203,10 +205,13 @@ mcpServer.tool(
     try {
       const { habit_id, ...queryParams } = args
       const url = `/habits/${habit_id}`
-
-      const response = await apiClient.get(url, {
-        params: queryParams,
+      
+      const response = await apiClient.request({
+        method: 'GET',
+        url: url,
+        params: queryParams
       })
+      
       return handleResult(response.data)
     } catch (error) {
       return handleError(error)
@@ -214,16 +219,26 @@ mcpServer.tool(
   }
 )
 
-mcpServer.tool('get-areas', `Get all areas`, {}, async (args) => {
-  try {
-    const response = await apiClient.get('/areas', {
-      params: args,
-    })
-    return handleResult(response.data)
-  } catch (error) {
-    return handleError(error)
+mcpServer.tool(
+  'get-areas',
+  `Get all areas`,
+  {
+  },
+  async (args) => {
+    try {
+      
+      const response = await apiClient.request({
+        method: 'GET',
+        url: '/areas',
+        params: args
+      })
+      
+      return handleResult(response.data)
+    } catch (error) {
+      return handleError(error)
+    }
   }
-})
+)
 
 mcpServer.tool(
   'get-moods',
@@ -234,9 +249,13 @@ mcpServer.tool(
   },
   async (args) => {
     try {
-      const response = await apiClient.get('/moods', {
-        params: args,
+      
+      const response = await apiClient.request({
+        method: 'GET',
+        url: '/moods',
+        params: args
       })
+      
       return handleResult(response.data)
     } catch (error) {
       return handleError(error)
@@ -244,14 +263,26 @@ mcpServer.tool(
   }
 )
 
-mcpServer.tool('add-mood', `Add mood entry`, {}, async (args) => {
-  try {
-    const response = await apiClient.post('/moods', args)
-    return handleResult(response.data)
-  } catch (error) {
-    return handleError(error)
+mcpServer.tool(
+  'add-mood',
+  `Add mood entry`,
+  {
+  },
+  async (args) => {
+    try {
+      
+      const response = await apiClient.request({
+        method: 'POST',
+        url: '/moods',
+        data: args
+      })
+      
+      return handleResult(response.data)
+    } catch (error) {
+      return handleError(error)
+    }
   }
-})
+)
 
 mcpServer.tool(
   'get-notes',
@@ -262,9 +293,13 @@ mcpServer.tool(
   },
   async (args) => {
     try {
-      const response = await apiClient.get('/notes', {
-        params: args,
+      
+      const response = await apiClient.request({
+        method: 'GET',
+        url: '/notes',
+        params: args
       })
+      
       return handleResult(response.data)
     } catch (error) {
       return handleError(error)
@@ -272,13 +307,45 @@ mcpServer.tool(
   }
 )
 
-async function main() {
-  const transport = new StdioServerTransport()
-  await mcpServer.server.connect(transport)
-  logger.log('Habitify API MCP Server started')
-}
+mcpServer.tool(
+  'add-note',
+  `Add note`,
+  {
+  },
+  async (args) => {
+    try {
+      
+      const response = await apiClient.request({
+        method: 'POST',
+        url: '/notes',
+        data: args
+      })
+      
+      return handleResult(response.data)
+    } catch (error) {
+      return handleError(error)
+    }
+  }
+)
 
-main().catch((error) => {
-  console.error('Server error:', error)
-  process.exit(1)
-})
+mcpServer.tool(
+  'get-actions',
+  `Get available actions`,
+  {
+  },
+  async (args) => {
+    try {
+      
+      const response = await apiClient.request({
+        method: 'GET',
+        url: '/actions',
+        params: args
+      })
+      
+      return handleResult(response.data)
+    } catch (error) {
+      return handleError(error)
+    }
+  }
+)
+
