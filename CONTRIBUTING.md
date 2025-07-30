@@ -1,6 +1,6 @@
-# Contributing to habitify
+# Contributing to Habitify API
 
-Thank you for your interest in contributing to the habitify! This guide will help you get started with development.
+Thank you for your interest in contributing to the Habitify API! This guide will help you get started with development.
 
 ## 🔧 Development Setup
 
@@ -15,8 +15,8 @@ Thank you for your interest in contributing to the habitify! This guide will hel
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/sargonpiraev/
-   cd 
+   git clone https://github.com/sargonpiraev/habitify-mcp-server
+   cd habitify-mcp-server
    ```
 
 2. **Install dependencies**:
@@ -129,10 +129,10 @@ We use semantic-release for automated versioning and publishing:
 
 ## 🆘 Getting Help
 
-- Check existing [issues](https://github.com/sargonpiraev//issues)
+- Check existing [issues](https://github.com/sargonpiraev/habitify-mcp-server/issues)
 - Create a new issue if you find a bug
 - Join our [Discord](https://discord.gg/ZsWGxRGj) for community support
 
 ## 📄 License
 
-By contributing to habitify, you agree that your contributions will be licensed under the MIT License. 
+By contributing to habitify, you agree that your contributions will be licensed under the MIT License.
