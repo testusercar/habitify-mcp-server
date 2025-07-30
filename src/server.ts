@@ -29,44 +29,49 @@ export const env = envSchema.parse(process.env)
 export const apiClient: AxiosInstance = axios.create({
   baseURL: 'https://api.habitify.me',
   headers: {
-    'Accept': 'application/json'
+    Accept: 'application/json',
   },
-  timeout: 30000
+  timeout: 30000,
 })
 
-apiClient.interceptors.request.use((config) => {
-  if (env.HABITIFY_API_KEY) {
-    config.headers['Authorization'] = env.HABITIFY_API_KEY
+apiClient.interceptors.request.use(
+  (config) => {
+    if (env.HABITIFY_API_KEY) {
+      config.headers['Authorization'] = env.HABITIFY_API_KEY
+    }
+
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
   }
-  
-  return config
-}, (error) => {
-  return Promise.reject(error)
-})
+)
 
 function handleResult(data: unknown): CallToolResult {
   return {
-    content: [{ 
-      type: 'text', 
-      text: JSON.stringify(data, null, 2) 
-    }]
+    content: [
+      {
+        type: 'text',
+        text: JSON.stringify(data, null, 2),
+      },
+    ],
   }
 }
 
 function handleError(error: unknown): CallToolResult {
   console.error(error)
-  
+
   if (axios.isAxiosError(error)) {
     const message = error.response?.data?.message || error.message
-    return { 
-      isError: true, 
-      content: [{ type: 'text', text: `API Error: ${message}` }] 
+    return {
+      isError: true,
+      content: [{ type: 'text', text: `API Error: ${message}` }],
     } as CallToolResult
   }
-  
-  return { 
-    isError: true, 
-    content: [{ type: 'text', text: `Error: ${error}` }] 
+
+  return {
+    isError: true,
+    content: [{ type: 'text', text: `Error: ${error}` }],
   } as CallToolResult
 }
 
@@ -83,19 +88,17 @@ mcpServer.tool(
   },
   async (args, extra) => {
     try {
-
       // Extract authorization token from HTTP request headers
       const authorization = extra?.requestInfo?.headers?.authorization as string
       const bearer = authorization?.replace('Bearer ', '')
-  
-      
+
       const response = await apiClient.request({
         headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
         method: 'GET',
         url: '/journal',
-        params: args
+        params: args,
       })
-      
+
       return handleResult(response.data)
     } catch (error) {
       return handleError(error)
@@ -117,15 +120,14 @@ mcpServer.tool(
       // Extract authorization token from HTTP request headers
       const authorization = extra?.requestInfo?.headers?.authorization as string
       const bearer = authorization?.replace('Bearer ', '')
-  
-      
+
       const response = await apiClient.request({
         headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
         method: 'POST',
         url: url,
-        data: requestData
+        data: requestData,
       })
-      
+
       return handleResult(response.data)
     } catch (error) {
       return handleError(error)
@@ -149,15 +151,14 @@ mcpServer.tool(
       // Extract authorization token from HTTP request headers
       const authorization = extra?.requestInfo?.headers?.authorization as string
       const bearer = authorization?.replace('Bearer ', '')
-  
-      
+
       const response = await apiClient.request({
         headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
         method: 'DELETE',
         url: url,
-        params: queryParams
+        params: queryParams,
       })
-      
+
       return handleResult(response.data)
     } catch (error) {
       return handleError(error)
@@ -180,15 +181,14 @@ mcpServer.tool(
       // Extract authorization token from HTTP request headers
       const authorization = extra?.requestInfo?.headers?.authorization as string
       const bearer = authorization?.replace('Bearer ', '')
-  
-      
+
       const response = await apiClient.request({
         headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
         method: 'DELETE',
         url: url,
-        params: queryParams
+        params: queryParams,
       })
-      
+
       return handleResult(response.data)
     } catch (error) {
       return handleError(error)
@@ -205,19 +205,17 @@ mcpServer.tool(
   },
   async (args, extra) => {
     try {
-
       // Extract authorization token from HTTP request headers
       const authorization = extra?.requestInfo?.headers?.authorization as string
       const bearer = authorization?.replace('Bearer ', '')
-  
-      
+
       const response = await apiClient.request({
         headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
         method: 'GET',
         url: '/habits',
-        params: args
+        params: args,
       })
-      
+
       return handleResult(response.data)
     } catch (error) {
       return handleError(error)
@@ -239,15 +237,14 @@ mcpServer.tool(
       // Extract authorization token from HTTP request headers
       const authorization = extra?.requestInfo?.headers?.authorization as string
       const bearer = authorization?.replace('Bearer ', '')
-  
-      
+
       const response = await apiClient.request({
         headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
         method: 'GET',
         url: url,
-        params: queryParams
+        params: queryParams,
       })
-      
+
       return handleResult(response.data)
     } catch (error) {
       return handleError(error)
@@ -255,32 +252,24 @@ mcpServer.tool(
   }
 )
 
-mcpServer.tool(
-  'get-areas',
-  `Get all areas`,
-  {
-  },
-  async (args, extra) => {
-    try {
+mcpServer.tool('get-areas', `Get all areas`, {}, async (args, extra) => {
+  try {
+    // Extract authorization token from HTTP request headers
+    const authorization = extra?.requestInfo?.headers?.authorization as string
+    const bearer = authorization?.replace('Bearer ', '')
 
-      // Extract authorization token from HTTP request headers
-      const authorization = extra?.requestInfo?.headers?.authorization as string
-      const bearer = authorization?.replace('Bearer ', '')
-  
-      
-      const response = await apiClient.request({
-        headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
-        method: 'GET',
-        url: '/areas',
-        params: args
-      })
-      
-      return handleResult(response.data)
-    } catch (error) {
-      return handleError(error)
-    }
+    const response = await apiClient.request({
+      headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
+      method: 'GET',
+      url: '/areas',
+      params: args,
+    })
+
+    return handleResult(response.data)
+  } catch (error) {
+    return handleError(error)
   }
-)
+})
 
 mcpServer.tool(
   'get-moods',
@@ -291,19 +280,17 @@ mcpServer.tool(
   },
   async (args, extra) => {
     try {
-
       // Extract authorization token from HTTP request headers
       const authorization = extra?.requestInfo?.headers?.authorization as string
       const bearer = authorization?.replace('Bearer ', '')
-  
-      
+
       const response = await apiClient.request({
         headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
         method: 'GET',
         url: '/moods',
-        params: args
+        params: args,
       })
-      
+
       return handleResult(response.data)
     } catch (error) {
       return handleError(error)
@@ -311,32 +298,24 @@ mcpServer.tool(
   }
 )
 
-mcpServer.tool(
-  'add-mood',
-  `Add mood entry`,
-  {
-  },
-  async (args, extra) => {
-    try {
+mcpServer.tool('add-mood', `Add mood entry`, {}, async (args, extra) => {
+  try {
+    // Extract authorization token from HTTP request headers
+    const authorization = extra?.requestInfo?.headers?.authorization as string
+    const bearer = authorization?.replace('Bearer ', '')
 
-      // Extract authorization token from HTTP request headers
-      const authorization = extra?.requestInfo?.headers?.authorization as string
-      const bearer = authorization?.replace('Bearer ', '')
-  
-      
-      const response = await apiClient.request({
-        headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
-        method: 'POST',
-        url: '/moods',
-        data: args
-      })
-      
-      return handleResult(response.data)
-    } catch (error) {
-      return handleError(error)
-    }
+    const response = await apiClient.request({
+      headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
+      method: 'POST',
+      url: '/moods',
+      data: args,
+    })
+
+    return handleResult(response.data)
+  } catch (error) {
+    return handleError(error)
   }
-)
+})
 
 mcpServer.tool(
   'get-notes',
@@ -347,19 +326,17 @@ mcpServer.tool(
   },
   async (args, extra) => {
     try {
-
       // Extract authorization token from HTTP request headers
       const authorization = extra?.requestInfo?.headers?.authorization as string
       const bearer = authorization?.replace('Bearer ', '')
-  
-      
+
       const response = await apiClient.request({
         headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
         method: 'GET',
         url: '/notes',
-        params: args
+        params: args,
       })
-      
+
       return handleResult(response.data)
     } catch (error) {
       return handleError(error)
@@ -367,57 +344,40 @@ mcpServer.tool(
   }
 )
 
-mcpServer.tool(
-  'add-note',
-  `Add note`,
-  {
-  },
-  async (args, extra) => {
-    try {
+mcpServer.tool('add-note', `Add note`, {}, async (args, extra) => {
+  try {
+    // Extract authorization token from HTTP request headers
+    const authorization = extra?.requestInfo?.headers?.authorization as string
+    const bearer = authorization?.replace('Bearer ', '')
 
-      // Extract authorization token from HTTP request headers
-      const authorization = extra?.requestInfo?.headers?.authorization as string
-      const bearer = authorization?.replace('Bearer ', '')
-  
-      
-      const response = await apiClient.request({
-        headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
-        method: 'POST',
-        url: '/notes',
-        data: args
-      })
-      
-      return handleResult(response.data)
-    } catch (error) {
-      return handleError(error)
-    }
+    const response = await apiClient.request({
+      headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
+      method: 'POST',
+      url: '/notes',
+      data: args,
+    })
+
+    return handleResult(response.data)
+  } catch (error) {
+    return handleError(error)
   }
-)
+})
 
-mcpServer.tool(
-  'get-actions',
-  `Get available actions`,
-  {
-  },
-  async (args, extra) => {
-    try {
+mcpServer.tool('get-actions', `Get available actions`, {}, async (args, extra) => {
+  try {
+    // Extract authorization token from HTTP request headers
+    const authorization = extra?.requestInfo?.headers?.authorization as string
+    const bearer = authorization?.replace('Bearer ', '')
 
-      // Extract authorization token from HTTP request headers
-      const authorization = extra?.requestInfo?.headers?.authorization as string
-      const bearer = authorization?.replace('Bearer ', '')
-  
-      
-      const response = await apiClient.request({
-        headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
-        method: 'GET',
-        url: '/actions',
-        params: args
-      })
-      
-      return handleResult(response.data)
-    } catch (error) {
-      return handleError(error)
-    }
+    const response = await apiClient.request({
+      headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
+      method: 'GET',
+      url: '/actions',
+      params: args,
+    })
+
+    return handleResult(response.data)
+  } catch (error) {
+    return handleError(error)
   }
-)
-
+})
