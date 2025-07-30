@@ -80,14 +80,36 @@ mcpServer.tool(
   'get-journal',
   `Get habit journal for a specific date`,
   {
-    target_date: z.string().optional(),
-    order_by: z.string().optional(),
+    targetDate: z.string().optional(),
+    orderBy: z.string().optional(),
     status: z.string().optional(),
-    area_id: z.string().optional(),
-    time_of_day: z.string().optional(),
+    areaId: z.string().optional(),
+    timeOfDay: z.string().optional(),
   },
   async (args, extra) => {
     try {
+      const queryParams = args
+
+      // Map camelCase to original parameter names for API request
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mappedParams: any = { ...queryParams }
+      if ('targetDate' in mappedParams) {
+        mappedParams['target_date'] = mappedParams['targetDate']
+        delete mappedParams['targetDate']
+      }
+      if ('orderBy' in mappedParams) {
+        mappedParams['order_by'] = mappedParams['orderBy']
+        delete mappedParams['orderBy']
+      }
+      if ('areaId' in mappedParams) {
+        mappedParams['area_id'] = mappedParams['areaId']
+        delete mappedParams['areaId']
+      }
+      if ('timeOfDay' in mappedParams) {
+        mappedParams['time_of_day'] = mappedParams['timeOfDay']
+        delete mappedParams['timeOfDay']
+      }
+
       // Extract authorization token from HTTP request headers
       const authorization = extra?.requestInfo?.headers?.authorization as string
       const bearer = authorization?.replace('Bearer ', '')
@@ -96,7 +118,7 @@ mcpServer.tool(
         headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
         method: 'GET',
         url: '/journal',
-        params: args,
+        params: mappedParams,
       })
 
       return handleResult(response.data)
@@ -110,12 +132,20 @@ mcpServer.tool(
   'add-habit-log',
   `Add a habit log`,
   {
-    habit_id: z.string(),
+    habitId: z.string(),
   },
   async (args, extra) => {
     try {
-      const { habit_id, ...requestData } = args
-      const url = `/logs/${habit_id}`
+      const { habitId, ...requestData } = args
+      const url = `/logs/${habitId}`
+
+      // Map camelCase to original parameter names for API request
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mappedParams: any = { ...requestData }
+      if ('habitId' in mappedParams) {
+        mappedParams['habit_id'] = mappedParams['habitId']
+        delete mappedParams['habitId']
+      }
 
       // Extract authorization token from HTTP request headers
       const authorization = extra?.requestInfo?.headers?.authorization as string
@@ -125,7 +155,7 @@ mcpServer.tool(
         headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
         method: 'POST',
         url: url,
-        data: requestData,
+        data: mappedParams,
       })
 
       return handleResult(response.data)
@@ -139,14 +169,30 @@ mcpServer.tool(
   'delete-habit-logs-range',
   `Delete habit logs in date range`,
   {
-    habit_id: z.string(),
-    start_date: z.string(),
-    end_date: z.string(),
+    habitId: z.string(),
+    startDate: z.string(),
+    endDate: z.string(),
   },
   async (args, extra) => {
     try {
-      const { habit_id, ...queryParams } = args
-      const url = `/logs/${habit_id}`
+      const { habitId, ...queryParams } = args
+      const url = `/logs/${habitId}`
+
+      // Map camelCase to original parameter names for API request
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mappedParams: any = { ...queryParams }
+      if ('habitId' in mappedParams) {
+        mappedParams['habit_id'] = mappedParams['habitId']
+        delete mappedParams['habitId']
+      }
+      if ('startDate' in mappedParams) {
+        mappedParams['start_date'] = mappedParams['startDate']
+        delete mappedParams['startDate']
+      }
+      if ('endDate' in mappedParams) {
+        mappedParams['end_date'] = mappedParams['endDate']
+        delete mappedParams['endDate']
+      }
 
       // Extract authorization token from HTTP request headers
       const authorization = extra?.requestInfo?.headers?.authorization as string
@@ -156,7 +202,7 @@ mcpServer.tool(
         headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
         method: 'DELETE',
         url: url,
-        params: queryParams,
+        params: mappedParams,
       })
 
       return handleResult(response.data)
@@ -170,13 +216,25 @@ mcpServer.tool(
   'delete-habit-log',
   `Delete a specific habit log`,
   {
-    habit_id: z.string(),
-    log_id: z.string(),
+    habitId: z.string(),
+    logId: z.string(),
   },
   async (args, extra) => {
     try {
-      const { habit_id, log_id, ...queryParams } = args
-      const url = `/logs/${habit_id}/${log_id}`
+      const { habitId, logId, ...queryParams } = args
+      const url = `/logs/${habitId}/${logId}`
+
+      // Map camelCase to original parameter names for API request
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mappedParams: any = { ...queryParams }
+      if ('habitId' in mappedParams) {
+        mappedParams['habit_id'] = mappedParams['habitId']
+        delete mappedParams['habitId']
+      }
+      if ('logId' in mappedParams) {
+        mappedParams['log_id'] = mappedParams['logId']
+        delete mappedParams['logId']
+      }
 
       // Extract authorization token from HTTP request headers
       const authorization = extra?.requestInfo?.headers?.authorization as string
@@ -186,7 +244,7 @@ mcpServer.tool(
         headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
         method: 'DELETE',
         url: url,
-        params: queryParams,
+        params: mappedParams,
       })
 
       return handleResult(response.data)
@@ -201,10 +259,20 @@ mcpServer.tool(
   `Get all habits`,
   {
     status: z.string().optional(),
-    area_id: z.string().optional(),
+    areaId: z.string().optional(),
   },
   async (args, extra) => {
     try {
+      const queryParams = args
+
+      // Map camelCase to original parameter names for API request
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mappedParams: any = { ...queryParams }
+      if ('areaId' in mappedParams) {
+        mappedParams['area_id'] = mappedParams['areaId']
+        delete mappedParams['areaId']
+      }
+
       // Extract authorization token from HTTP request headers
       const authorization = extra?.requestInfo?.headers?.authorization as string
       const bearer = authorization?.replace('Bearer ', '')
@@ -213,7 +281,7 @@ mcpServer.tool(
         headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
         method: 'GET',
         url: '/habits',
-        params: args,
+        params: mappedParams,
       })
 
       return handleResult(response.data)
@@ -227,12 +295,20 @@ mcpServer.tool(
   'get-habit',
   `Get habit details`,
   {
-    habit_id: z.string(),
+    habitId: z.string(),
   },
   async (args, extra) => {
     try {
-      const { habit_id, ...queryParams } = args
-      const url = `/habits/${habit_id}`
+      const { habitId, ...queryParams } = args
+      const url = `/habits/${habitId}`
+
+      // Map camelCase to original parameter names for API request
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mappedParams: any = { ...queryParams }
+      if ('habitId' in mappedParams) {
+        mappedParams['habit_id'] = mappedParams['habitId']
+        delete mappedParams['habitId']
+      }
 
       // Extract authorization token from HTTP request headers
       const authorization = extra?.requestInfo?.headers?.authorization as string
@@ -242,7 +318,7 @@ mcpServer.tool(
         headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
         method: 'GET',
         url: url,
-        params: queryParams,
+        params: mappedParams,
       })
 
       return handleResult(response.data)
@@ -254,6 +330,12 @@ mcpServer.tool(
 
 mcpServer.tool('get-areas', `Get all areas`, {}, async (args, extra) => {
   try {
+    const queryParams = args
+
+    // Map camelCase to original parameter names for API request
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mappedParams: any = { ...queryParams }
+
     // Extract authorization token from HTTP request headers
     const authorization = extra?.requestInfo?.headers?.authorization as string
     const bearer = authorization?.replace('Bearer ', '')
@@ -262,7 +344,7 @@ mcpServer.tool('get-areas', `Get all areas`, {}, async (args, extra) => {
       headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
       method: 'GET',
       url: '/areas',
-      params: args,
+      params: mappedParams,
     })
 
     return handleResult(response.data)
@@ -275,11 +357,25 @@ mcpServer.tool(
   'get-moods',
   `Get mood entries`,
   {
-    start_date: z.string().optional(),
-    end_date: z.string().optional(),
+    startDate: z.string().optional(),
+    endDate: z.string().optional(),
   },
   async (args, extra) => {
     try {
+      const queryParams = args
+
+      // Map camelCase to original parameter names for API request
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mappedParams: any = { ...queryParams }
+      if ('startDate' in mappedParams) {
+        mappedParams['start_date'] = mappedParams['startDate']
+        delete mappedParams['startDate']
+      }
+      if ('endDate' in mappedParams) {
+        mappedParams['end_date'] = mappedParams['endDate']
+        delete mappedParams['endDate']
+      }
+
       // Extract authorization token from HTTP request headers
       const authorization = extra?.requestInfo?.headers?.authorization as string
       const bearer = authorization?.replace('Bearer ', '')
@@ -288,7 +384,7 @@ mcpServer.tool(
         headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
         method: 'GET',
         url: '/moods',
-        params: args,
+        params: mappedParams,
       })
 
       return handleResult(response.data)
@@ -300,6 +396,12 @@ mcpServer.tool(
 
 mcpServer.tool('add-mood', `Add mood entry`, {}, async (args, extra) => {
   try {
+    const requestData = args
+
+    // Map camelCase to original parameter names for API request
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mappedParams: any = { ...requestData }
+
     // Extract authorization token from HTTP request headers
     const authorization = extra?.requestInfo?.headers?.authorization as string
     const bearer = authorization?.replace('Bearer ', '')
@@ -308,7 +410,7 @@ mcpServer.tool('add-mood', `Add mood entry`, {}, async (args, extra) => {
       headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
       method: 'POST',
       url: '/moods',
-      data: args,
+      data: mappedParams,
     })
 
     return handleResult(response.data)
@@ -321,11 +423,25 @@ mcpServer.tool(
   'get-notes',
   `Get notes`,
   {
-    start_date: z.string().optional(),
-    end_date: z.string().optional(),
+    startDate: z.string().optional(),
+    endDate: z.string().optional(),
   },
   async (args, extra) => {
     try {
+      const queryParams = args
+
+      // Map camelCase to original parameter names for API request
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const mappedParams: any = { ...queryParams }
+      if ('startDate' in mappedParams) {
+        mappedParams['start_date'] = mappedParams['startDate']
+        delete mappedParams['startDate']
+      }
+      if ('endDate' in mappedParams) {
+        mappedParams['end_date'] = mappedParams['endDate']
+        delete mappedParams['endDate']
+      }
+
       // Extract authorization token from HTTP request headers
       const authorization = extra?.requestInfo?.headers?.authorization as string
       const bearer = authorization?.replace('Bearer ', '')
@@ -334,7 +450,7 @@ mcpServer.tool(
         headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
         method: 'GET',
         url: '/notes',
-        params: args,
+        params: mappedParams,
       })
 
       return handleResult(response.data)
@@ -346,6 +462,12 @@ mcpServer.tool(
 
 mcpServer.tool('add-note', `Add note`, {}, async (args, extra) => {
   try {
+    const requestData = args
+
+    // Map camelCase to original parameter names for API request
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mappedParams: any = { ...requestData }
+
     // Extract authorization token from HTTP request headers
     const authorization = extra?.requestInfo?.headers?.authorization as string
     const bearer = authorization?.replace('Bearer ', '')
@@ -354,7 +476,7 @@ mcpServer.tool('add-note', `Add note`, {}, async (args, extra) => {
       headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
       method: 'POST',
       url: '/notes',
-      data: args,
+      data: mappedParams,
     })
 
     return handleResult(response.data)
@@ -365,6 +487,12 @@ mcpServer.tool('add-note', `Add note`, {}, async (args, extra) => {
 
 mcpServer.tool('get-actions', `Get available actions`, {}, async (args, extra) => {
   try {
+    const queryParams = args
+
+    // Map camelCase to original parameter names for API request
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mappedParams: any = { ...queryParams }
+
     // Extract authorization token from HTTP request headers
     const authorization = extra?.requestInfo?.headers?.authorization as string
     const bearer = authorization?.replace('Bearer ', '')
@@ -373,7 +501,7 @@ mcpServer.tool('get-actions', `Get available actions`, {}, async (args, extra) =
       headers: bearer ? { Authorization: `Bearer ${bearer}` } : undefined,
       method: 'GET',
       url: '/actions',
-      params: args,
+      params: mappedParams,
     })
 
     return handleResult(response.data)
